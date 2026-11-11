@@ -1,0 +1,14 @@
+<!doctype html><meta charset=utf-8><script src="../src/app/vendor/hb.js"></script><script src="../src/app/vendor/hbjs.js"></script><script src="../src/app/engine.js"></script><script>
+async function init(){const hb=hbjs(await createHarfBuzz({locateFile:f=>'../src/app/vendor/'+f}));BL.setShaper(hb);const j=async u=>(await fetch(u)).json();BL.loadGlyphs(await j('../src/app/data/glyphs.json'));
+for(const [k,f] of [['heb','BLHebrew.ttf'],['grk','BLGreek.ttf'],['phn','BLPaleo.ttf']])BL.loadFont(k,new Uint8Array(await (await fetch('../src/app/fonts/'+f)).arrayBuffer()));
+BL.load('lexHeb',await j('../src/app/data/lex/heb.json'));BL.load('lexGrk',await j('../src/app/data/lex/grk.json'));BL.load('formsHeb',await j('../src/app/data/lex/forms_heb.json'));BL.load('formsGrk',await j('../src/app/data/lex/forms_grk.json'));BL.load('keyLemma',await j('../src/app/data/lex/grk_keylemma.json'));BL.indexForms();
+const t0=performance.now();['heb','grk','phn'].forEach(s=>BL._templates(s));return Math.round(performance.now()-t0);}
+function loadImg(src){return new Promise((r,e)=>{const i=new Image();i.onload=()=>r(i);i.onerror=e;i.src=src;});}
+async function rasterise(svg,scale,fmt,q){const im=await loadImg('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg));const c=document.createElement('canvas');c.width=Math.round(im.width*scale);c.height=Math.round(im.height*scale);const x=c.getContext('2d');x.drawImage(im,0,0,c.width,c.height);
+ if(fmt==='jpeg'){const im2=await loadImg(c.toDataURL('image/jpeg',q));x.drawImage(im2,0,0);}return x.getImageData(0,0,c.width,c.height);}
+async function run(text,script,theme,scale,fmt,q){const opts={script,theme,size:40,width:900,noCant:true,sep:true};const svg=BL.render(text,opts);const id=await rasterise(svg,scale,fmt,q);const t0=performance.now();const r=BL.readImage(id,'auto');
+ let want=script==='phn'?BL.toPaleo(text,true):script==='heb'?BL.stripCantillation(text):text;want=want.normalize('NFC').replace(/\s+/g,' ').trim();const got=(r.text||'').normalize('NFC').replace(/\s+/g,' ').trim();
+ const bare=s=>script==='heb'?BL.stripPoints(s):script==='grk'?BL.stripAccents(s).toLowerCase():s;
+ return {exact:got===want,letters:bare(got)===bare(want),got:r.ok?got:null,want,reason:r.reason,conf:r.confidence,unc:r.uncertain,script:r.script,ms:Math.round(performance.now()-t0),w:id.width,h:id.height};}
+async function decodeUrl(u){const im=await loadImg(u);const sc=Math.min(1,2400/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);const x=c.getContext('2d');x.drawImage(im,0,0,c.width,c.height);const d=BL.readImage(x.getImageData(0,0,c.width,c.height),'auto');return {ok:d.ok,text:d.text,reason:d.reason,conf:d.confidence};}
+</script>

@@ -1,0 +1,115 @@
+templates ms 2889
+OK   Exo 32:7 heb scroll 1.5 jpeg 1350x324 conf 0.87 unc 14 131ms
+OK   Jol 1:15 phn parchment 1.5 png 1350x276 conf 0.81 unc 16 77ms
+OK   2Jn 1:10 grk parchment 1.5 png 1350x288 conf 0.79 unc 20 116ms
+OK   LXXSusTh 1:3 grk scroll 1.5 jpeg 1350x288 conf 0.84 unc 40 168ms
+OK   1Ch 24:28 heb scroll 0.75 png 675x99 conf 0.73 unc 1 29ms
+OK   Lam 2:4 phn stone 1.5 jpeg 1350x378 conf 0.78 unc 21 127ms
+OK   Luk 11:1 grk stone 1 png 900x192 conf 0.81 unc 10 123ms
+FAIL LXX1Kgdms 14:10 grk parchment 1 jpeg 900x264 conf 0.81 unc 22 135ms
+   want καὶ ἐὰν τάδε εἴπωσιν πρὸς ἡμᾶς Ἀνάβητε πρὸς ἡμᾶς, καὶ ἀναβησόμεθα, ὅτι παραδέδωκεν αὐτοὺς 
+   got  καὶ ἐὰν τάδε εἴπωσιν πρὸς ἡμᾶς Ἀνάβητε πρὸς ἡμᾶς, καὶ ἀναβησόμεθᾳ ὅτι παραδέδωκεν αὐτοὺς
+OK   Ezk 29:15 heb night 2 png 1800x432 conf 0.88 unc 0 94ms
+OK   Lam 3:44 phn stone 1.5 png 1350x174 conf 0.83 unc 10 24ms
+OK   3Jn 1:12 grk night 1.5 jpeg 1350x396 conf 0.83 unc 42 177ms
+OK   LXX2Esd 9:5 grk parchment 2 png 1800x384 conf 0.83 unc 0 149ms
+OK   Jer 40:14 heb parchment 1.5 jpeg 1350x324 conf 0.85 unc 11 101ms
+OK   Est 10:3 phn scroll 0.75 png 675x189 conf 0.76 unc 20 151ms
+OK   1Ti 5:14 grk stone 1.5 png 1350x396 conf 0.79 unc 18 245ms
+OK   LXXHab 3:15 grk parchment 2 jpeg 1800x384 conf 0.83 unc 0 100ms
+OK   Ecc 5:3 heb stone 2 jpeg 1800x264 conf 0.85 unc 0 40ms
+OK   Est 8:5 phn scroll 1 jpeg 900x252 conf 0.77 unc 17 179ms
+OK   Jhn 12:30 grk stone 1 png 900x192 conf 0.8 unc 10 115ms
+LETT LXXDeut 33:10 grk scroll 0.75 jpeg 675x198 conf 0.68 unc 15 91ms
+   want δηλώσουσιν τὰ δικαιώματά σου τῷ Ἰακώβ, καὶ τὸν νόμον σου τῷ Ἰσραήλ· ἐπιθήσουσιν θυμίαμα 
+   got  δηλώσουσιν τὰ δικαιώματά σου τῷ Ἱακώβ, καὶ τὸν νόμον σου τῷ Ἰσραήλ· ἐπιθήσουσιν θυμίαμα
+OK   Exo 23:4 heb parchment 0.75 png 675x162 conf 0.71 unc 3 75ms
+OK   Lam 2:1 phn night 0.75 jpeg 675x189 conf 0.76 unc 12 185ms
+OK   Heb 7:23 grk stone 1 png 900x192 conf 0.81 unc 15 151ms
+OK   LXXDan 11:2 grk parchment 1.5 jpeg 1350x396 conf 0.82 unc 29 171ms
+LETT 1Ki 12:10 heb stone 1.5 jpeg 1350x324 conf 0.85 unc 17 106ms
+   want וַיְדַבְּרוּ אֵלָיו הַיְלָדִים אֲשֶׁר גָּדְלוּ אִתּוֹ לֵאמֹר כֹּה־תֹאמַר לָעָם הַזֶּה אֲשֶׁר דִּבְּרוּ אֵלֶיךָ 
+   got  וַיְדַבְּרוּ אֵלָיו הַיְלָדִים אֲשֶׁר גָּדְלוּ אִתּוֹ לֵאמֹר כֹּה־תֹאמַר לָעָם הַזה אֲשֶׁר דִּבְּרוּ אֵלֶיךָ
+OK   2Ki 15:11 phn scroll 1.5 png 1350x276 conf 0.82 unc 22 160ms
+OK   Col 2:1 grk parchment 1 png 900x192 conf 0.81 unc 18 157ms
+FAIL LXX3Kgdms 17:10 grk stone 1 jpeg 900x192 conf 0.81 unc 13 133ms
+   want καὶ ἀνέστη καὶ ἐπορεύθη εἰς Σάρεπτα, εἰς τὸν πυλῶνα τῆς πόλεως· καὶ ἰδοὺ ἐκεῖ 
+   got  καὶ ἀνέστη καὶ ἐπορεύθη εἰς Σάρεπτᾳ εἰς τὸν πυλῶνα τῆς πόλεως· καὶ ἰδοὺ ἐκεῖ
+OK   Num 5:16 heb stone 2 jpeg 1800x264 conf 0.86 unc 0 35ms
+OK   1Sa 16:22 phn parchment 0.75 png 675x138 conf 0.76 unc 11 95ms
+FAIL 1Jn 1:3 grk parchment 2 jpeg 1800x528 conf 0.84 unc 4 141ms
+   want ὃ ἑωράκαμεν καὶ ἀκηκόαμεν, ἀπαγγέλλομεν καὶ ὑμῖν ἵνα καὶ ὑμεῖς κοινωνίαν ἔχητε μεθʼ ἡμῶν· 
+   got  ὃ ἑωράκαμεν καὶ ἀκηκόαμεν, ἀπαγγέλλομεν καὶ ὑμῖν ἵνα καὶ ὑμεῖς κοινωνίαν ἔχητε μεθʼ ὑεκ͂ν·
+LETT LXXHab 2:12 grk night 0.75 png 675x144 conf 0.67 unc 10 119ms
+   want Οὐαὶ ὁ οἰκοδομῶν πόλιν ἐν αἵμασιν, καὶ ἑτοιμάζων πόλιν ἐν ἀδικίαις. 
+   got  Οὐαὶ ὁ οἰκοδομῶν πόλιν ἐν ἁίμασιν, καὶ ἑτοιμάζων πόλιν ἐν ἀδικίαις.
+OK   Num 18:20 heb night 2 jpeg 1800x432 conf 0.85 unc 0 69ms
+OK   Est 1:6 phn night 1.5 jpeg 1350x378 conf 0.8 unc 24 118ms
+OK   Rev 22:11 grk parchment 1 png 900x264 conf 0.8 unc 26 172ms
+OK   LXXHos 11:12 grk night 2 png 1800x384 conf 0.83 unc 0 160ms
+OK   Pro 5:2 heb stone 1.5 png 1350x198 conf 0.89 unc 5 69ms
+OK   Hag 2:12 phn scroll 1.5 jpeg 1350x378 conf 0.83 unc 17 135ms
+FAIL 2Co 12:18 grk night 0.75 jpeg 675x198 conf 0.66 unc 21 88ms
+   want παρεκάλεσα Τίτον καὶ συναπέστειλα τὸν ἀδελφόν· μήτι ἐπλεονέκτησεν ὑμᾶς Τίτος; οὐ τῷ αὐτῷ πνεύματι 
+   got  παρεκάλεσα Τίτον καὶ συναπέστειλα τὸν ἀδελφόν· μήτι ἐπλεονέκτησεν ὑμᾶς Τίτος,ʼ οὐ τῷ αὐτῷ πνεύματι
+OK   LXXProv 12:19 grk stone 2 jpeg 1800x384 conf 0.84 unc 0 95ms
+OK   Exo 25:40 heb stone 1.5 jpeg 1350x198 conf 0.86 unc 12 100ms
+OK   Pro 1:33 phn stone 1.5 jpeg 1350x276 conf 0.78 unc 8 119ms
+OK   Mrk 9:19 grk night 2 jpeg 1800x384 conf 0.83 unc 0 159ms
+OK   LXX1Chr 16:43 grk scroll 0.75 png 675x144 conf 0.67 unc 20 84ms
+LETT Isa 10:2 heb night 1.5 png 1350x324 conf 0.86 unc 13 104ms
+   want לְהַטּוֹת מִדִּין דַּלִּים וְלִגְזֹל מִשְׁפַּט עֲנִיֵּי עַמִּי לִהְיוֹת אַלְמָנוֹת שְׁלָלָם וְאֶת־יְתוֹמִים יָבֹזּוּ׃ 
+   got  לְהַטּוֹת מִדִּין דַּלִּים וְלִגְזֹל מִשְׁפַּט עֲנִיֵּי עַמִּי לִהְיוֹת אַלְמָנוֹת שְׁלָלָם וְאֶת־יְתוֹמִים יָבֹזִוּ׃
+OK   Zec 6:11 phn stone 1 png 900x252 conf 0.75 unc 23 95ms
+OK   1Th 5:1 grk night 1.5 png 1350x288 conf 0.81 unc 25 210ms
+OK   LXXGen 37:2 grk night 2 png 1800x384 conf 0.83 unc 0 175ms
+FAIL Hos 9:9 heb stone 0.75 png 675x162 conf 0.73 unc 5 71ms
+   want הֶעְמִיקוּ־שִׁחֵתוּ כִּימֵי הַגִּבְעָה יִזְכּוֹר עֲוֹנָם יִפְקוֹד חַטֹּאותָם׃ ס 
+   got  הֶעְמִיקוּ־שִׁתֵתוּ כִּימֵי הַגִּבְעָה יִזְכּוֹר עֲוֹנָם יִפְקוֹד תַטֹּאותָם׃ ס
+OK   Jon 2:4 phn parchment 1.5 jpeg 1350x276 conf 0.78 unc 17 114ms
+LETT Mat 6:16 grk night 1 jpeg 900x264 conf 0.8 unc 23 137ms
+   want Ὅταν δὲ νηστεύητε, μὴ γίνεσθε ὡς οἱ ὑποκριταὶ σκυθρωποί· ἀφανίζουσιν γὰρ τὰ πρόσωπα αὐτῶν 
+   got  Ὄταν δὲ νηστεύητε, μὴ γίνεσθε ὡς οἱ ὑποκριταὶ σκυθρωποί· ἀφανίζουσιν γὰρ τὰ πρόσωπα αὐτῶν
+OK   LXXJob 35:4 grk night 1.5 png 1350x288 conf 0.8 unc 12 154ms
+OK   1Ch 17:21 heb parchment 1.5 jpeg 1350x324 conf 0.85 unc 18 108ms
+OK   Dan 12:6 phn scroll 1.5 png 1350x378 conf 0.83 unc 18 99ms
+OK   2Co 12:16 grk night 1.5 png 1350x288 conf 0.79 unc 19 157ms
+FAIL LXXDeut 12:19 grk stone 0.75 png 675x198 conf 0.65 unc 17 75ms
+   want πρόσεχε σεαυτῷ μὴ ἐνκαταλίπῃς τὸν Λευείτην πάντα τὸν χρόνον ὅσον ἐὰν ζῆς ἐπὶ τῆς 
+   got  πρόσεχε σεαυτῷ μὴ ἐνκαταλίπῃς τὸν Λευείτην πάντα τὸν χρόνον ὅσον ἐὰν ζῆς ἐπὶ τῦε
+OK   Isa 42:10 heb night 1.5 png 1350x324 conf 0.87 unc 18 126ms
+OK   Oba 1:12 phn night 1.5 png 1350x378 conf 0.82 unc 22 142ms
+OK   1Jn 3:13 grk stone 1.5 png 1350x288 conf 0.79 unc 13 114ms
+LETT LXXEsth 8:16 grk stone 0.75 jpeg 675x144 conf 0.65 unc 15 86ms
+   want ὄντας δὲ υἱοὺς τοῦ ὑψίστου μεγίστου ζῶντος θεοῦ τοῦ κατευθύνοντος ἡμῖν τε καὶ τοῖς 
+   got  ὅντας δὲ υἱοὺς τοῦ ὑψίστου μεγίστου ζῶντος θεοῦ τοῦ κατευθύνοντος ἡμῖν τε καὶ τοῖς
+FAIL Jon 2:6 heb scroll 0.75 jpeg 675x162 conf 0.69 unc 14 92ms
+   want לְקִצְבֵי הָרִים יָרַדְתִּי הָאָרֶץ בְּרִחֶיהָ בַעֲדִי לְעוֹלָם וַתַּעַל מִשַּׁחַת חַיַּי יְהוָה אֱלֹהָי׃ 
+   got  לְקִצְבֵי הָרִים יָרַדְתִּי הָאָרֶץ בְּרִתֶיהָ בַעֲדִי לְעוֹלָם וַתַּעַל מִשַּׁחַת תַיַּי יְהוָה אֱלֹהָי׃
+OK   Hab 1:1 phn parchment 0.75 jpeg 675x87 conf 0.77 unc 4 61ms
+OK   Luk 21:5 grk scroll 0.75 jpeg 675x144 conf 0.66 unc 15 73ms
+OK   LXXObad 1:15 grk stone 1 jpeg 900x192 conf 0.8 unc 11 122ms
+OK   Hag 1:3 heb stone 2 png 1800x264 conf 0.88 unc 0 32ms
+OK   Lam 2:10 phn scroll 0.75 jpeg 675x189 conf 0.73 unc 11 114ms
+OK   Jhn 1:33 grk night 2 png 1800x384 conf 0.82 unc 0 251ms
+OK   LXX1Esd 8:84 grk parchment 1.5 jpeg 1350x396 conf 0.84 unc 37 134ms
+OK   Jol 3:15 heb parchment 1.5 jpeg 1350x198 conf 0.87 unc 7 105ms
+OK   Neh 8:7 phn parchment 1 jpeg 900x252 conf 0.75 unc 14 176ms
+OK   Jas 2:21 grk stone 1 jpeg 900x264 conf 0.8 unc 16 137ms
+OK   LXXSus 1:29 grk parchment 1.5 jpeg 1350x396 conf 0.84 unc 49 166ms
+OK   Jdg 8:8 heb scroll 1 png 900x216 conf 0.83 unc 7 142ms
+OK   Mal 4:4 phn parchment 1.5 png 1350x378 conf 0.79 unc 16 142ms
+OK   Gal 5:4 grk parchment 0.75 jpeg 675x144 conf 0.65 unc 20 84ms
+OK   LXX3Kgdms 21:30 grk scroll 1.5 png 1350x288 conf 0.79 unc 15 127ms
+LETT Est 8:16 heb parchment 1.5 jpeg 1350x198 conf 0.85 unc 9 105ms
+   want לַיְּהוּדִים הָיְתָה אוֹרָה וְשִׂמְחָה וְשָׂשֹׂן וִיקָר׃ 
+   got  לַיְּהוּדִים הָיְתָה אוֹרָה וְשִׂמְחָה וְשָׂשׂׂן וִיקָר׃
+OK   Mal 4:2 phn night 2 jpeg 1800x504 conf 0.83 unc 3 187ms
+LETT 3Jn 1:5 grk stone 0.75 png 675x144 conf 0.65 unc 13 102ms
+   want ἀγαπητέ, πιστὸν ποιεῖς ὃ ἐὰν ἐργάσῃ εἰς τοὺς ἀδελφοὺς καὶ τοῦτο ξένους, 
+   got  ἀγαπητέ, πιστὸν ποιεῖς ὂ ἐὰν ἐργάσῃ εἰς τοὺς ἀδελφοὺς καὶ τοῦτο ξένους,
+OK   LXXBar 5:9 grk stone 2 jpeg 1800x528 conf 0.84 unc 0 156ms
+TOTAL heb cases 20 exact 15 letters-right 18 misses-flagged 5
+TOTAL phn cases 20 exact 20 letters-right 20 misses-flagged 0
+TOTAL grk cases 20 exact 16 letters-right 18 misses-flagged 4
+TOTAL grk(LXX) cases 20 exact 14 letters-right 17 misses-flagged 6

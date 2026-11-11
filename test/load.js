@@ -1,0 +1,3 @@
+const fs=require('fs'),path=require('path');const B=require('../src/app/engine.js');const D=path.join(__dirname,'..','src','app','data');
+const j=f=>JSON.parse(fs.readFileSync(path.join(D,f),'utf8'));
+module.exports=()=>{B.load('trHeb',j('lex/tr_heb.json'));B.load('trGrk',j('lex/tr_grk.json'));B.load('enHeb',j('lex/en_heb.json'));B.load('enGrk',j('lex/en_grk.json'));B.load('lexHeb',j('lex/heb.json'));B.load('lexGrk',j('lex/grk.json'));B.load('formsHeb',j('lex/forms_heb.json'));B.load('formsGrk',j('lex/forms_grk.json'));B.load('keyLemma',j('lex/grk_keylemma.json'));B.load('cmu',fs.readFileSync(path.join(D,'cmu.tsv'),'utf8'));return B;};
