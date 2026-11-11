@@ -1,0 +1,21 @@
+STEPBible data - Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Data created by www.STEPBible.org based on work at Tyndale House Cambridge (CC BY 4.0).
+Source: https://github.com/STEPBible/STEPBible-Data
+
+Used in Bible Languages Studio:
+- TAHOT (Translators Amalgamated Hebrew OT): Hebrew words, transliterations, English glosses,
+  extended Strong's numbers and morphology codes. The Hebrew text is the Westminster Leningrad
+  Codex (public domain) with Open Scriptures Hebrew Bible morphology (CC BY 4.0).
+- TAGNT (Translators Amalgamated Greek NT): the words of the SBL Greek New Testament (CC BY 4.0,
+  Society of Biblical Literature and Logos Bible Software), with glosses, Strong's numbers and morphology.
+- TBESG (Translators Brief lexicon of Extended Strongs for Greek, based on Abbott-Smith).
+- TBESH (Translators Brief lexicon of Extended Strongs for Hebrew): only the lemma, transliteration,
+  part of speech and the Tyndale English gloss. The definitions column (Abridged BDB by Online Bible)
+  is NOT used.
+
+Changes made: the data was converted into compact JSON files (one per book), indexes were built for
+search, concordance and drafting, Greek NT words were filtered to the SBLGNT edition, and HTML markup
+in the Greek lexicon was simplified. No words, glosses or tags were edited.
+
+Licence text: https://creativecommons.org/licenses/by/4.0/legalcode

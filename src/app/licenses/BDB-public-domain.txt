@@ -1,0 +1,3 @@
+Brown, Driver and Briggs, A Hebrew and English Lexicon of the Old Testament (1906): public domain.
+Digital formatting by Eliran Wong (https://github.com/eliranwong/unabridged-BDB-Hebrew-lexicon), released as a
+public domain document. Changes made: markup simplified and references linked to the studio's Bible reader.
