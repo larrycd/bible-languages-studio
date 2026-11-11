@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bible Languages Studio</title>
+<link rel="icon" href="icon.svg">
+<style>
+@font-face { font-family: 'BLHebrew'; src: url('fonts/BLHebrew.ttf') format('truetype'); }
+@font-face { font-family: 'BLGreek'; src: url('fonts/BLGreek.ttf') format('truetype'); }
+@font-face { font-family: 'BLPaleo'; src: url('fonts/BLPaleo.ttf') format('truetype'); }
+:root { --bg:#120f0b; --panel:#1b1611; --panel2:#251e17; --line:#3a2f24; --text:#f1e7d6; --dim:#ab9b85; --gold:#d6b37a; --gold2:#ecd3a3; --ok:#5fb37f; --warn:#d9a441; --bad:#e0605a; --heb:'BLHebrew'; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.5 "Segoe UI", system-ui, sans-serif; }
+header { display:flex; align-items:center; gap:14px; padding:10px 18px; border-bottom:1px solid var(--line); background:linear-gradient(90deg,#211709,#120f0b 60%); }
+header .mark { font-family:BLHebrew; font-size:34px; color:var(--gold2); line-height:1; }
+header .mark .g { font-family:BLGreek; font-size:28px; margin-left:4px; }
+header h1 { margin:0; font:600 21px Georgia, serif; letter-spacing:.4px; }
+header .by { color:var(--dim); font-size:12.5px; }
+header .sp { flex:1; }
+header .ver { color:var(--dim); font-size:12px; text-align:right; max-width:520px; }
+.wrap { display:grid; grid-template-columns: 170px 1fr; min-height:calc(100vh - 66px); }
+nav { border-right:1px solid var(--line); padding:12px 8px; background:#16120d; }
+nav button { display:block; width:100%; text-align:left; background:transparent; color:var(--dim); border:1px solid transparent; border-radius:8px; padding:8px 10px; margin-bottom:4px; cursor:pointer; font-size:14px; }
+nav button.on { color:#fff; background:#2b2213; border-color:#5d4a26; }
+nav .hint { padding:10px 8px; }
+.view { display:none; padding:14px 16px; } .view.on { display:block; }
+.grid2 { display:grid; grid-template-columns: minmax(360px, 1.5fr) minmax(320px, 1fr); gap:14px; }
+@media (max-width:1150px) { .grid2 { grid-template-columns:1fr; } .wrap { grid-template-columns:1fr; } nav { display:flex; flex-wrap:wrap; gap:4px; } nav button { width:auto; } }
+section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; min-width:0; margin-bottom:14px; }
+h2 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gold2); }
+h3 { margin:14px 0 6px; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--dim); }
+textarea { width:100%; min-height:110px; resize:vertical; background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:8px; padding:10px; font:17px/1.6 BLGreek, BLHebrew, Consolas, monospace; }
+input[type=text], input[type=search] { width:100%; background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:8px; padding:8px 10px; font:15px BLGreek, BLHebrew, Consolas, monospace; }
+select { background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:7px; padding:5px 8px; font-size:13px; }
+.seg { display:inline-flex; flex-wrap:wrap; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+.seg button { background:var(--panel2); color:var(--dim); border:0; border-right:1px solid var(--line); padding:6px 10px; cursor:pointer; font-size:13px; }
+.seg button:last-child { border-right:0; }
+.seg button.on { background:var(--gold); color:#1a1408; font-weight:600; }
+.row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px; }
+button.b { background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:7px; padding:6px 11px; cursor:pointer; font-size:13px; }
+button.b:hover { border-color:var(--gold); }
+button.p { background:var(--gold); border-color:var(--gold); color:#1a1408; font-weight:600; }
+label.ck { display:inline-flex; gap:5px; align-items:center; color:var(--dim); font-size:13px; }
+.hint { color:var(--dim); font-size:12px; }
+.note { font-size:12px; color:var(--dim); border-left:3px solid var(--gold); padding:4px 8px; margin:8px 0; background:#211a10; }
+.heb { font-family:BLHebrew; direction:rtl; }
+.grk { font-family:BLGreek; }
+.phn { font-family:BLPaleo; direction:rtl; }
+.lat { font:15px Consolas, monospace; background:var(--panel2); border:1px solid var(--line); border-radius:8px; padding:8px 10px; word-break:break-word; white-space:pre-wrap; }
+.text { background:var(--panel2); border:1px solid var(--line); border-radius:8px; padding:8px 12px; word-break:break-word; white-space:pre-wrap; font-size:24px; line-height:1.9; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th, td { text-align:left; padding:5px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+th { color:var(--dim); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.8px; }
+.tag { display:inline-block; font-size:11px; padding:1px 7px; border-radius:999px; border:1px solid var(--line); color:var(--dim); white-space:nowrap; }
+.tag.w { color:#a8e0bb; border-color:#2f5a40; } .tag.nm { color:#f0c27a; border-color:#5d4a26; } .tag.uv { color:#e9a0a8; border-color:#5a2a31; }
+.badge { display:inline-flex; gap:6px; align-items:center; font-size:12px; padding:3px 9px; border-radius:999px; border:1px solid var(--line); }
+.badge.ok { color:var(--ok); border-color:#2f5a40; } .badge.bad { color:var(--bad); border-color:#5a2a31; } .badge.wait { color:var(--warn); border-color:#5d4a26; }
+.conf { height:8px; background:var(--panel2); border-radius:4px; overflow:hidden; border:1px solid var(--line); }
+.conf > i { display:block; height:100%; background:linear-gradient(90deg,var(--bad),var(--warn),var(--ok)); }
+#stage { border:1px solid var(--line); border-radius:8px; overflow:auto; max-height:62vh; }
+#stage svg { max-width:100%; height:auto; display:block; margin:auto; }
+/* Bible reader */
+.verse { padding:6px 4px; border-bottom:1px solid #2a2219; }
+.verse .vn { color:var(--gold); font:600 12px "Segoe UI", sans-serif; vertical-align:super; margin:0 4px; direction:ltr; unicode-bidi:isolate; }
+.verse.heb .vt { font-family:BLHebrew; font-size:26px; line-height:2.1; direction:rtl; }
+.verse.grk .vt { font-family:BLGreek; font-size:21px; line-height:1.8; }
+.verse.phn .vt { font-family:BLPaleo; font-size:24px; line-height:1.9; direction:rtl; }
+.w { cursor:pointer; border-radius:4px; padding:0 1px; }
+.w:hover { background:#3a2c14; }
+.w.sel { background:#5d4a26; }
+.il { display:inline-flex; flex-direction:column; align-items:center; margin:3px 5px 8px; vertical-align:top; cursor:pointer; border-radius:6px; padding:2px 4px; }
+.il:hover { background:#2e2416; } .il.sel { background:#4a3a1e; }
+.il .o { font-size:24px; line-height:1.6; } .il .t, .il .gl, .il .m { direction:ltr; unicode-bidi:isolate; } .il .t { font:12px Consolas, monospace; color:#d8c7a8; } .il .gl { font-size:12px; color:#a8e0bb; max-width:140px; text-align:center; } .il .m { font-size:10.5px; color:var(--dim); max-width:150px; text-align:center; }
+.par { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.par > div { min-width:0; }
+.wordpanel { position:sticky; top:10px; }
+.lex { font-size:13.5px; line-height:1.55; max-height:56vh; overflow:auto; }
+.lex .h { font-family:BLHebrew; font-size:17px; } .lex .g { font-family:BLGreek; }
+.lex a[data-r] { cursor:pointer; text-decoration:underline dotted; }
+.kbd { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+.kbd button { min-width:34px; height:34px; background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:6px; cursor:pointer; font-size:19px; }
+.kbd button.s { font-size:12px; min-width:auto; padding:0 8px; }
+.kbd.heb button { font-family:BLHebrew; } .kbd.grk button { font-family:BLGreek; }
+.res { white-space:pre-wrap; font:12px/1.5 Consolas, monospace; background:var(--panel2); border:1px solid var(--line); border-radius:8px; padding:8px; max-height:380px; overflow:auto; }
+#drop { border:2px dashed #5d4a26; border-radius:10px; padding:22px; text-align:center; color:var(--dim); cursor:pointer; }
+#drop.over { border-color:var(--gold); color:var(--text); }
+#preview { max-width:100%; max-height:240px; display:none; margin:10px auto 0; border-radius:6px; }
+.conc .r { padding:5px 0; border-bottom:1px solid #2a2219; }
+.conc .ref { color:var(--gold); font-size:12px; cursor:pointer; margin-right:6px; }
+.hit { background:#5d4a26; border-radius:3px; }
+.dictent { padding:6px 4px; border-bottom:1px solid var(--line); cursor:pointer; }
+.dictent:hover { background:#221b13; }
+.loading { color:var(--warn); }
+a { color:var(--gold2); }
+footer { color:var(--dim); font-size:12px; padding:6px 18px 16px; border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+<header>
+  <div class="mark" aria-hidden="true">ב<span class="g">λ</span></div>
+  <div><h1>Bible Languages Studio</h1><div class="by">Biblical Hebrew &middot; Paleo-Hebrew &middot; Koine Greek &middot; by Larry Dalton</div></div>
+  <div class="sp"></div>
+  <div class="ver" id="ver">loading&hellip;</div>
+</header>
+<div class="wrap">
+<nav id="nav">
+  <button data-v="bible" class="on">📖 Bible</button>
+  <button data-v="write">✒ Write</button>
+  <button data-v="translate">⇄ Translate</button>
+  <button data-v="dict">📚 Dictionary</button>
+  <button data-v="conc">🔎 Concordance</button>
+  <button data-v="reader">🖼 Reader</button>
+  <button data-v="test">✔ Self-test</button>
+  <button data-v="about">ℹ About</button>
+  <div class="hint">Everything runs on this computer.</div>
+</nav>
+<div>
+<!-- ================= Bible ================= -->
+<div class="view on" id="v-bible">
+  <div class="row">
+    <span class="seg" id="corpus"><button data-c="ot" class="on">Hebrew OT</button><button data-c="lxx">Septuagint</button><button data-c="nt">Greek NT</button></span>
+    <select id="book"></select>
+    <select id="chap"></select>
+    <button class="b" id="prev">◀</button><button class="b" id="next">▶</button>
+    <input type="text" id="goref" placeholder="Go to, e.g. Gen 1:1, Ps 23, John 3:16" style="width:250px">
+  </div>
+  <div class="row">
+    <span id="hebopts"><span class="hint">Hebrew:</span>
+      <select id="hebstyle"><option value="full">pointed with cantillation</option><option value="points" selected>pointed (vowels only)</option><option value="bare">consonants only</option><option value="paleo">Paleo-Hebrew script</option></select></span>
+    <label class="ck"><input type="checkbox" id="inter"> Interlinear</label>
+    <label class="ck" id="parwrap"><input type="checkbox" id="par"> Septuagint alongside</label>
+    <span class="hint" id="bookinfo"></span>
+  </div>
+  <div class="grid2">
+    <section><h2 id="chaptitle">Text</h2><div id="text"></div></section>
+    <section class="wordpanel"><h2>Word</h2><div id="word" class="hint">Click a word to see its dictionary form, grammar, meaning and every place it occurs.</div></section>
+  </div>
+</div>
+<!-- ================= Write ================= -->
+<div class="view" id="v-write">
+  <div class="grid2">
+    <section>
+      <h2>Write</h2>
+      <div class="row"><span class="seg" id="wscript"><button data-s="heb" class="on">Hebrew (pointed)</button><button data-s="phn">Paleo-Hebrew</button><button data-s="grk">Koine Greek</button></span></div>
+      <div class="row"><span class="seg" id="wmode"><button data-m="text" class="on">Hebrew / Greek or transliteration</button><button data-m="sound">English words &amp; names by sound</button></span></div>
+      <textarea id="wsrc" spellcheck="false">בְּרֵאשִׁ֖ית בָּרָ֣א אֱלֹהִ֑ים אֵ֥ת הַשָּׁמַ֖יִם וְאֵ֥ת הָאָֽרֶץ׃</textarea>
+      <div class="hint" id="whint"></div>
+      <div class="kbd heb" id="kbd"></div>
+      <div class="row" style="margin-top:10px">
+        <label class="ck"><input type="checkbox" id="wcant" checked> cantillation marks</label>
+        <label class="ck"><input type="checkbox" id="wsep" checked> word dividers (Paleo)</label>
+        <select id="wtheme"><option value="parchment">Parchment</option><option value="scroll">Scroll</option><option value="stone">Stone</option><option value="night">Night</option></select>
+        <select id="wsize"><option value="34">Small</option><option value="46" selected>Medium</option><option value="64">Large</option></select>
+      </div>
+      <div class="chips row" id="wex"></div>
+    </section>
+    <section>
+      <h2>Result</h2>
+      <div class="row"><button class="b" id="dlsvg">Export SVG</button><button class="b" id="dlpng">Export PNG</button><button class="b" id="cpuni">Copy text</button><span class="badge wait" id="chk1">SVG read-back</span><span class="badge wait" id="chk2">Image read-back</span></div>
+      <div id="stage"></div>
+      <h3>Transliteration</h3><div class="lat" id="wtr"></div>
+      <h3>Text (Unicode)</h3><div class="text" id="wuni"></div>
+      <h3>Words</h3><table id="wwords"><thead><tr><th>Word</th><th>How</th><th>Dictionary</th></tr></thead><tbody></tbody></table>
+    </section>
+  </div>
+</div>
+<!-- ================= Translate ================= -->
+<div class="view" id="v-translate">
+  <section>
+    <h2>English → Biblical Hebrew and Koine Greek</h2>
+    <textarea id="tsrc" style="min-height:80px;font:16px 'Segoe UI',sans-serif">In the beginning God created the heavens and the earth.</textarea>
+    <div class="row" style="margin-top:8px" id="tex"></div>
+    <div class="note">Rule-based drafts built from the Bible's own word forms: each word is looked up in the dictionaries and given the form the Hebrew Bible, Septuagint or New Testament actually uses for that grammar. They are a starting point, not a fluent translation.</div>
+  </section>
+  <div class="grid2">
+    <section><h2>Biblical Hebrew</h2><div id="th"></div></section>
+    <section><h2>Koine Greek</h2><div id="tg"></div></section>
+  </div>
+</div>
+<!-- ================= Dictionary ================= -->
+<div class="view" id="v-dict">
+  <div class="grid2">
+    <section>
+      <h2>Dictionary</h2>
+      <input type="search" id="dq" placeholder="English, Hebrew, Greek, transliteration or Strong's number (e.g. love, אהב, ἀγάπη, agape, H0430, G3056)">
+      <div class="row" style="margin-top:6px"><span class="seg" id="dlang"><button data-l="all" class="on">Both</button><button data-l="heb">Hebrew / Aramaic</button><button data-l="grk">Greek</button></span><span class="hint" id="dstat"></span></div>
+      <div id="dres"></div>
+    </section>
+    <section class="wordpanel"><h2>Entry</h2><div id="dent" class="hint">Choose a word.</div></section>
+  </div>
+</div>
+<!-- ================= Concordance ================= -->
+<div class="view" id="v-conc">
+  <section>
+    <h2>Concordance</h2>
+    <div class="row"><input type="search" id="cq" placeholder="A dictionary word or Strong's number, e.g. H0430, G0026, λόγος, שָׁלוֹם, love" style="max-width:520px"><button class="b p" id="cgo">Find</button>
+      <label class="ck"><input type="checkbox" id="cot" checked> Hebrew OT</label><label class="ck"><input type="checkbox" id="clxx" checked> Septuagint</label><label class="ck"><input type="checkbox" id="cnt" checked> Greek NT</label></div>
+    <div class="hint" id="cstat"></div>
+    <div id="cres" class="conc"></div>
+  </section>
+</div>
+<!-- ================= Reader ================= -->
+<div class="view" id="v-reader">
+  <div class="grid2">
+    <section>
+      <h2>Read an SVG or image</h2>
+      <div id="drop">Drop an SVG, PNG or JPEG here, or click to choose a file. You can also paste an image.<br><span class="hint">SVGs from this studio are read exactly from their letter outlines. Images are read by matching each letter and vowel point against the studio's Hebrew, Greek and Paleo-Hebrew letters (cantillation marks are not read from images).</span></div>
+      <input type="file" id="file" accept=".svg,.png,.jpg,.jpeg,image/*" hidden>
+      <img id="preview" alt="">
+      <h3>Or paste Hebrew, Greek or Paleo-Hebrew text</h3>
+      <textarea id="ptext" style="min-height:70px" placeholder="Paste text here"></textarea>
+    </section>
+    <section><h2>Result</h2><div id="rout" class="hint">Nothing read yet.</div></section>
+  </div>
+</div>
+<!-- ================= Self-test ================= -->
+<div class="view" id="v-test">
+  <section>
+    <h2>Self-test</h2>
+    <p class="hint">Runs on this computer now. Every number is measured when you press the button.</p>
+    <button class="b p" id="runtest">Run self-test</button>
+    <div class="res" id="testout" style="margin-top:10px">Not run yet.</div>
+  </section>
+</div>
+<!-- ================= About ================= -->
+<div class="view" id="v-about">
+  <section>
+    <h2>About</h2>
+    <p><b>Bible Languages Studio</b> reads, writes and studies the languages of the Bible: <b>Biblical Hebrew</b> with vowel points (nikkud) and cantillation, the old <b>Paleo-Hebrew</b> script, and <b>Koine Greek</b> with breathings and accents. It was designed and built by <b>Larry Dalton</b>.</p>
+    <ul class="hint">
+      <li><b>Bible</b>: the whole Hebrew Old Testament (Westminster Leningrad Codex), the Septuagint (Swete's edition) and the Greek New Testament (SBL Greek New Testament), with every word's dictionary form, grammar and meaning; interlinear view; Septuagint alongside the Hebrew.</li>
+      <li><b>Write</b>: type Hebrew or Greek, a transliteration, Beta Code, or English words and names; export SVG or PNG and check that it reads back.</li>
+      <li><b>Translate</b>: rule-based English drafts in Biblical Hebrew (verb first, construct chains, object marker, prefixes) and Koine Greek (cases, articles, verb endings), using forms found in the Bible.</li>
+      <li><b>Dictionary</b> and <b>Concordance</b>: Brown-Driver-Briggs for Hebrew and Aramaic, Abbott-Smith for Greek, with every occurrence in the OT, Septuagint and NT.</li>
+    </ul>
+    <h3>Credits and licences</h3>
+    <ul class="hint">
+      <li>Hebrew OT with morphology, glosses and Strong's numbers; Greek NT with glosses; Greek lexicon (Abbott-Smith based); Hebrew glosses: <b>STEPBible.org / Tyndale House, Cambridge</b>, CC BY 4.0 (<a href="licenses/STEPBible-CC-BY-4.0.txt">notice</a>). Data from github.com/STEPBible, changed into the studio's format.</li>
+      <li>Hebrew text: <b>Westminster Leningrad Codex</b> (public domain) with <b>Open Scriptures Hebrew Bible</b> morphology (CC BY 4.0). Greek NT text: <b>SBL Greek New Testament</b> (CC BY 4.0).</li>
+      <li>Septuagint: <b>Swete</b>, The Old Testament in Greek (1909–30, public domain), transcription and Morpheus analysis by the <b>QuantForge LXX</b> project, CC BY-SA 4.0 (<a href="licenses/LXX-CC-BY-SA-4.0.txt">notice</a>). The source has some OCR errors.</li>
+      <li>Hebrew lexicon: <b>Brown-Driver-Briggs</b> (1906, public domain), formatted by Eliran Wong.</li>
+      <li>Pronunciations: <b>CMU Pronouncing Dictionary</b>, BSD licence (<a href="licenses/CMUdict-BSD.txt">licence</a>).</li>
+      <li>Fonts: <b>Noto Serif Hebrew</b>, <b>Noto Serif</b> (Greek) and <b>Noto Sans Phoenician</b>, © The Noto Project Authors, SIL Open Font License 1.1 (<a href="licenses/Noto-OFL.txt">licence</a>). Text shaping: <b>HarfBuzz</b> (harfbuzzjs), MIT (<a href="vendor/harfbuzzjs-LICENSE.txt">licence</a>).</li>
+      <li>Studio software © 2026 Larry Dalton.</li>
+    </ul>
+  </section>
+</div>
+</div>
+</div>
+<footer>Bible Languages Studio runs entirely on this computer. No internet connection is used.</footer>
+<script src="vendor/hb.js"></script>
+<script src="vendor/hbjs.js"></script>
+<script src="engine.js"></script>
+<script>
+(function () {
+'use strict';
+var $ = function (id) { return document.getElementById(id); };
+function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function getJSON(u) { return fetch(u).then(function (r) { if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); }); }
+var BOOKS = [], BYID = {}, CACHE = {}, LEXH = null, LEXG = null, H2G = null, BDBI = null, BDBC = {}, CONC = {}, READY = false, MORE = false;
+var state = { corpus: 'ot', book: 'Gen', chap: 1 };
+/* ---------------- navigation */
+$('nav').onclick = function (e) { var b = e.target.closest('button'); if (!b) return; show(b.dataset.v); };
+function show(v) { [].forEach.call($('nav').querySelectorAll('button'), function (x) { x.classList.toggle('on', x.dataset.v === v); }); document.querySelectorAll('.view').forEach(function (x) { x.classList.toggle('on', x.id === 'v-' + v); }); if (v === 'write') write(); if (v === 'translate') translate(); }
+function seg(id, fn) { $(id).onclick = function (e) { var b = e.target.closest('button'); if (!b) return; [].forEach.call(this.children, function (x) { x.classList.toggle('on', x === b); }); fn(b); }; }
+/* ---------------- Bible text */
+function fileOf(b) { return 'data/text/' + b.corpus + '_' + (b.corpus === 'lxx' ? b.id.slice(3) : b.id) + '.json'; }
+function bookData(id) { var b = BYID[id]; if (!CACHE[id]) CACHE[id] = getJSON(fileOf(b)); return CACHE[id]; }
+function fillBooks() {
+  $('book').innerHTML = BOOKS.filter(function (b) { return b.corpus === state.corpus; }).map(function (b) { return '<option value="' + b.id + '">' + esc(b.name) + '</option>'; }).join('');
+  if (!BYID[state.book] || BYID[state.book].corpus !== state.corpus) state.book = $('book').options[0].value;
+  $('book').value = state.book; fillChaps();
+}
+function chapList(b) { return b.chn || b.ch.map(function (_, i) { return i + 1; }); }
+function fillChaps() { var b = BYID[state.book]; $('chap').innerHTML = chapList(b).map(function (c) { return '<option>' + c + '</option>'; }).join(''); if (chapList(b).indexOf(+state.chap) < 0) state.chap = chapList(b)[0]; $('chap').value = state.chap; }
+seg('corpus', function (b) { state.corpus = b.dataset.c; state.book = null; fillBooks(); showChapter(); });
+$('book').onchange = function () { state.book = this.value; state.chap = chapList(BYID[state.book])[0]; fillChaps(); showChapter(); };
+$('chap').onchange = function () { state.chap = +this.value; showChapter(); };
+$('prev').onclick = function () { step(-1); }; $('next').onclick = function () { step(1); };
+function step(d) { var b = BYID[state.book], cl = chapList(b), i = cl.indexOf(+state.chap) + d; if (i >= 0 && i < cl.length) { state.chap = cl[i]; $('chap').value = state.chap; showChapter(); } }
+['hebstyle', 'inter', 'par'].forEach(function (id) { $(id).onchange = showChapter; });
+// Psalms are numbered differently in the Septuagint
+function lxxPsalm(c) { if (c <= 8) return c; if (c <= 10) return 9; if (c <= 113) return c - 1; if (c <= 115) return 113; if (c === 116) return 114; if (c <= 146) return c - 1; if (c === 147) return 146; return c; }
+function hebText(s) { var st = $('hebstyle').value; return st === 'full' ? s : st === 'points' ? BL.stripCantillation(s) : st === 'bare' ? BL.stripPoints(s) : BL.toPaleo(s); }
+var curWords = {};
+function verseHTML(b, c, v, ws, inter) {
+  var lang = b.lang, cls = lang === 'heb' ? ($('hebstyle').value === 'paleo' ? 'phn' : 'heb') : 'grk', out = '<div class="verse ' + cls + '" data-ref="' + b.id + '.' + c + '.' + v + '"><span class="vn">' + v + '</span>';
+  if (inter) {
+    out += '<div style="direction:' + (lang === 'heb' ? 'rtl' : 'ltr') + '">' + ws.map(function (w, i) {
+      var k = b.id + '.' + c + '.' + v + '.' + i; curWords[k] = { b: b, w: w, ref: [b.id, c, v] };
+      var orig = lang === 'heb' ? hebText(w[0].replace(/\//g, '')) : w[0], tr = lang === 'heb' ? w[1].replace(/\//g, '') : b.corpus === 'nt' ? w[1] : BL.translitGreek(w[0]);
+      var gl = b.corpus === 'lxx' ? lexGloss(w[3]) : w[2], mo = b.corpus === 'ot' ? BL.decodeHebrewMorph(w[4]) : b.corpus === 'nt' ? BL.decodeGreekMorph(w[4]) : BL.decodeLxxMorph(w[2]);
+      return '<span class="il" data-k="' + k + '"><span class="o ' + cls + '">' + esc(orig) + '</span><span class="t">' + esc(tr) + '</span><span class="gl">' + esc(gl) + '</span><span class="m">' + esc(mo) + '</span></span>';
+    }).join('') + '</div>';
+  } else {
+    var parts = ws.map(function (w, i) { var k = b.id + '.' + c + '.' + v + '.' + i; curWords[k] = { b: b, w: w, ref: [b.id, c, v] }; var t = lang === 'heb' ? hebText(w[0].replace(/\//g, '')) : w[0]; return '<span class="w" data-k="' + k + '">' + esc(t) + '</span>'; });
+    var joined = ''; parts.forEach(function (p, i) { joined += p; if (i < parts.length - 1) joined += /־<\/span>$/.test(p) ? '' : ' '; });
+    out += '<span class="vt">' + joined + '</span>';
+  }
+  return out + '</div>';
+}
+function lexGloss(k) { var e = (LEXG && LEXG[k]) || (LEXH && LEXH[k]); return e ? e[3] : ''; }
+function showChapter() {
+  var b = BYID[state.book], c = state.chap, inter = $('inter').checked;
+  $('hebopts').style.display = b.lang === 'heb' ? '' : 'none';
+  var lxxB = b.corpus === 'ot' ? BOOKS.filter(function (x) { return x.corpus === 'lxx' && x.heb === b.id; })[0] : null;
+  $('parwrap').style.display = lxxB ? '' : 'none';
+  $('chaptitle').textContent = b.name + ' ' + c;
+  $('bookinfo').textContent = b.corpus === 'ot' ? 'Westminster Leningrad Codex' : b.corpus === 'nt' ? 'SBL Greek New Testament' : 'Septuagint, Swete\'s edition' + (b.heb ? '' : ' (no Hebrew counterpart)');
+  $('text').innerHTML = '<span class="loading">Loading…</span>'; curWords = {};
+  var jobs = [bookData(b.id)], lc = c;
+  if (lxxB && $('par').checked) { lc = lxxB.id === 'LXXPs' ? lxxPsalm(c) : c; jobs.push(bookData(lxxB.id)); }
+  Promise.all(jobs).then(function (r) {
+    var ch = r[0][c] || {}, html = Object.keys(ch).map(Number).sort(function (a, b2) { return a - b2; }).map(function (v) { return verseHTML(b, c, v, ch[v], inter); }).join('');
+    if (r[1]) {
+      var lch = r[1][lc] || {}, lhtml = Object.keys(lch).map(Number).sort(function (a, b2) { return a - b2; }).map(function (v) { return verseHTML(lxxB, lc, v, lch[v], inter); }).join('');
+      html = '<div class="par"><div>' + html + '</div><div><div class="hint">' + esc(lxxB.name) + ' ' + lc + (lxxB.id === 'LXXPs' && lc !== c ? ' (the Septuagint numbers the Psalms differently)' : '') + (lxxB.id === 'LXXJer' ? ' (Jeremiah is ordered differently in the Septuagint)' : '') + '</div>' + (lhtml || '<div class="hint">No text for this chapter.</div>') + '</div></div>';
+    }
+    $('text').innerHTML = html || '<div class="hint">No text.</div>';
+  }).catch(function (e) { $('text').innerHTML = '<div class="note">' + esc(e.message) + '</div>'; });
+}
+$('text').onclick = function (e) { var el = e.target.closest('[data-k]'); if (!el) return; document.querySelectorAll('#text .sel').forEach(function (x) { x.classList.remove('sel'); }); el.classList.add('sel'); wordPanel(curWords[el.dataset.k], $('word')); };
+function keyOf(cw) { var b = cw.b, w = cw.w; if (b.corpus === 'ot') { var m = /\{(H\d+[A-Za-z]?)\}/.exec(w[3]); return m ? m[1] : (w[3].match(/H\d+[A-Za-z]?/) || [''])[0]; } if (b.corpus === 'nt') return w[3]; return w[3]; }
+function wordPanel(cw, el) {
+  var b = cw.b, w = cw.w, key = keyOf(cw), heb = b.lang === 'heb', e = heb ? LEXH && LEXH[key] : LEXG && LEXG[key];
+  var surf = heb ? w[0].replace(/\//g, '') : w[0];
+  var h = '<div class="text ' + (heb ? 'heb' : 'grk') + '" style="font-size:34px">' + esc(heb ? BL.stripCantillation(surf) : surf) + '</div>';
+  if (heb) h += '<div class="hint" style="margin:4px 0">Paleo-Hebrew: <span class="phn" style="font-size:22px">' + esc(BL.toPaleo(surf)) + '</span></div>';
+  h += '<table>';
+  h += '<tr><th>Transliteration</th><td>' + esc(heb ? BL.translitHebrew(surf) : BL.translitGreek(surf)) + '</td></tr>';
+  if (b.corpus !== 'lxx') h += '<tr><th>In this verse</th><td>' + esc(w[2]) + '</td></tr>';
+  h += '<tr><th>Grammar</th><td>' + esc(b.corpus === 'ot' ? BL.decodeHebrewMorph(w[4]) : b.corpus === 'nt' ? BL.decodeGreekMorph(w[4]) : BL.decodeLxxMorph(w[2])) + ' <span class="hint">' + esc(b.corpus === 'lxx' ? w[2] : w[4]) + '</span></td></tr>';
+  if (e) h += '<tr><th>Dictionary form</th><td><span class="' + (heb ? 'heb' : 'grk') + '" style="font-size:20px">' + esc(e[0]) + '</span> ' + esc(e[1]) + ' <span class="tag">' + esc(key) + '</span></td></tr><tr><th>Meaning</th><td>' + esc(e[3]) + '</td></tr>';
+  else if (b.corpus === 'lxx') h += '<tr><th>Dictionary form</th><td class="grk">' + esc(w[1]) + ' <span class="hint">(not in the Greek lexicon)</span></td></tr>';
+  h += '</table><div class="row" style="margin-top:8px"><button class="b" data-act="conc">Every occurrence</button><button class="b" data-act="dict">Full dictionary entry</button><button class="b" data-act="write">Write this verse</button></div><div class="lex" data-slot="lex"></div>';
+  el.innerHTML = h;
+  el.querySelector('[data-act=conc]').onclick = function () { $('cq').value = key || w[1]; show('conc'); concordance(); };
+  el.querySelector('[data-act=dict]').onclick = function () { show('dict'); entry(key, heb ? 'heb' : 'grk'); };
+  el.querySelector('[data-act=write]').onclick = function () { bookData(b.id).then(function (d) { var ws = d[cw.ref[1]][cw.ref[2]]; setWrite(heb ? ($('hebstyle').value === 'paleo' ? 'phn' : 'heb') : 'grk', heb ? BL.joinWords(ws.map(function (x) { return x[0].replace(/\//g, ''); })) : ws.map(function (x) { return x[0]; }).join(' ')); }); };
+  if (key) defn(key, heb ? 'heb' : 'grk', el.querySelector('[data-slot=lex]'), true);
+}
+/* full definitions: BDB for Hebrew, Abbott-Smith for Greek */
+function defn(key, lang, slot, short) {
+  if (lang === 'grk') { var e = LEXG && LEXG[key]; slot.innerHTML = e ? '<h3>Abbott-Smith</h3>' + e[4] : ''; return Promise.resolve(); }
+  var base = key.replace(/[A-Za-z]$/, '').replace(/^H0*/, 'H'), sk = 'H' + ('0000' + base.slice(1)).slice(-4);
+  slot.innerHTML = '<span class="loading">Loading Brown-Driver-Briggs…</span>';
+  return (BDBI ? Promise.resolve(BDBI) : getJSON('data/lex/bdb_index.json').then(function (x) { BDBI = x; return x; })).then(function (I) {
+    var ids = I.byStrong[sk] || []; if (!ids.length) { slot.innerHTML = '<div class="hint">No Brown-Driver-Briggs entry is linked to ' + esc(key) + '.</div>'; return; }
+    var chunks = {}; ids.forEach(function (id) { chunks[I.chunk[id]] = 1; });
+    return Promise.all(Object.keys(chunks).map(function (c) { if (!BDBC[c]) BDBC[c] = getJSON('data/lex/bdb_' + ('0' + c).slice(-2) + '.json'); return BDBC[c]; })).then(function (cs) {
+      var all = {}; cs.forEach(function (c) { Object.assign(all, c); });
+      slot.innerHTML = '<h3>Brown-Driver-Briggs</h3>' + ids.slice(0, short ? 2 : 20).map(function (id) { return '<div>' + (all[id] || '') + '</div>'; }).join('<hr>');
+    });
+  });
+}
+document.addEventListener('click', function (e) { var a = e.target.closest('a[data-r]'); if (!a) return; e.preventDefault(); goRef(a.dataset.r); });
+var ALIAS = { gen: 'Gen', ge: 'Gen', exod: 'Exo', exo: 'Exo', ex: 'Exo', lev: 'Lev', num: 'Num', deut: 'Deu', deu: 'Deu', dt: 'Deu', josh: 'Jos', jos: 'Jos', judg: 'Jdg', jdg: 'Jdg', ruth: 'Rut', rut: 'Rut', '1sam': '1Sa', '1sa': '1Sa', '2sam': '2Sa', '2sa': '2Sa', '1kgs': '1Ki', '1ki': '1Ki', '1kings': '1Ki', '2kgs': '2Ki', '2ki': '2Ki', '2kings': '2Ki', '1chr': '1Ch', '1ch': '1Ch', '2chr': '2Ch', '2ch': '2Ch', ezra: 'Ezr', ezr: 'Ezr', neh: 'Neh', esth: 'Est', est: 'Est', job: 'Job', ps: 'Psa', psa: 'Psa', psalm: 'Psa', psalms: 'Psa', prov: 'Pro', pro: 'Pro', eccl: 'Ecc', ecc: 'Ecc', song: 'Sng', sng: 'Sng', isa: 'Isa', jer: 'Jer', lam: 'Lam', ezek: 'Ezk', ezk: 'Ezk', dan: 'Dan', hos: 'Hos', joel: 'Jol', jol: 'Jol', amos: 'Amo', amo: 'Amo', obad: 'Oba', oba: 'Oba', jonah: 'Jon', jon: 'Jon', mic: 'Mic', nah: 'Nam', nam: 'Nam', hab: 'Hab', zeph: 'Zep', zep: 'Zep', hag: 'Hag', zech: 'Zec', zec: 'Zec', mal: 'Mal', matt: 'Mat', mat: 'Mat', mt: 'Mat', mark: 'Mrk', mrk: 'Mrk', mk: 'Mrk', luke: 'Luk', luk: 'Luk', lk: 'Luk', john: 'Jhn', jhn: 'Jhn', jn: 'Jhn', acts: 'Act', act: 'Act', rom: 'Rom', '1cor': '1Co', '1co': '1Co', '2cor': '2Co', '2co': '2Co', gal: 'Gal', eph: 'Eph', phil: 'Php', php: 'Php', col: 'Col', '1thess': '1Th', '1th': '1Th', '2thess': '2Th', '2th': '2Th', '1tim': '1Ti', '1ti': '1Ti', '2tim': '2Ti', '2ti': '2Ti', titus: 'Tit', tit: 'Tit', phlm: 'Phm', phm: 'Phm', heb: 'Heb', jas: 'Jas', james: 'Jas', '1pet': '1Pe', '1pe': '1Pe', '2pet': '2Pe', '2pe': '2Pe', '1john': '1Jn', '1jn': '1Jn', '2john': '2Jn', '2jn': '2Jn', '3john': '3Jn', '3jn': '3Jn', jude: 'Jud', jud: 'Jud', rev: 'Rev' };
+function goRef(r) { // "Gen.1.1", "Gen 1:1", "John 3:16", "LXXPs.22.1"
+  var m = /^\s*(LXX\w+|[1-3]?\s?[A-Za-z]+)[\s.]*(\d+)?(?:[:.](\d+))?/.exec(r); if (!m) return false;
+  var id = m[1].replace(/\s/g, ''), lo = id.toLowerCase(), b = BYID[id] || BYID[ALIAS[lo]] || BOOKS.filter(function (x) { return x.name.toLowerCase().replace(/\s/g, '') === lo; })[0];
+  if (b && !BYID[id]) id = b.id; if (!b) return false;
+  state.corpus = b.corpus; state.book = b.id; state.chap = +(m[2] || chapList(b)[0]);
+  [].forEach.call($('corpus').children, function (x) { x.classList.toggle('on', x.dataset.c === b.corpus); });
+  fillBooks(); $('chap').value = state.chap; show('bible'); showChapter();
+  if (m[3]) setTimeout(function () { var el = document.querySelector('.verse[data-ref="' + b.id + '.' + state.chap + '.' + m[3] + '"]'); if (el) { el.scrollIntoView({ block: 'center' }); el.style.background = '#2b2213'; } }, 400);
+  return true;
+}
+$('goref').onkeydown = function (e) { if (e.key === 'Enter') { if (!goRef(this.value)) this.style.borderColor = 'var(--bad)'; else this.style.borderColor = ''; } };
+/* ---------------- Write */
+var wscript = 'heb', wmode = 'text', lastSVG = '', tok = 0;
+var WEX = { heb: ['בְּרֵאשִׁ֖ית בָּרָ֣א אֱלֹהִ֑ים', 'shema yisrael', 'שָׁלוֹם', 'yehovah ro\'i lo echsar'], phn: ['בראשית ברא אלהים', 'yehovah', 'shalom'], grk: ['Ἐν ἀρχῇ ἦν ὁ λόγος', 'e)n a)rxh=| h)=n o( lo/gos', 'agape', 'Ἰησοῦς Χριστός'] };
+var WEXS = { heb: ['Larry Dalton', 'Jessica', 'Australia'], phn: ['Larry Dalton', 'Sydney'], grk: ['Larry Dalton', 'Jessica', 'Australia'] };
+var KEYS = { heb: Array.from('אבגדהוזחטיכךלמםנןסעפףצץקרשת').concat(['שׁ', 'שׂ', '־', '׃']), grk: Array.from('αβγδεζηθικλμνξοπρσςτυφχψω').concat(['·']) };
+var MARKS = { heb: [['ְ', 'shva'], ['ֱ', 'hataf segol'], ['ֲ', 'hataf patah'], ['ֳ', 'hataf qamats'], ['ִ', 'hiriq'], ['ֵ', 'tsere'], ['ֶ', 'segol'], ['ַ', 'patah'], ['ָ', 'qamats'], ['ֹ', 'holam'], ['ֻ', 'qubuts'], ['ּ', 'dagesh']], grk: [['̓', 'smooth'], ['̔', 'rough'], ['́', 'acute'], ['̀', 'grave'], ['͂', 'circumflex'], ['ͅ', 'iota subscript'], ['̈', 'diaeresis']] };
+function kbd() {
+  var s = wscript === 'phn' ? 'heb' : wscript, k = $('kbd'); k.className = 'kbd ' + s;
+  if (wmode === 'sound') { k.innerHTML = ''; return; }
+  k.innerHTML = KEYS[s].map(function (c) { return '<button data-c="' + c + '">' + c + '</button>'; }).join('') + MARKS[s].map(function (m) { return '<button class="s" data-c="' + m[0] + '" title="' + m[1] + '">' + (s === 'heb' ? 'ב' : 'α') + m[0] + ' ' + m[1] + '</button>'; }).join('');
+}
+$('kbd').onclick = function (e) { var b = e.target.closest('button'); if (!b) return; var t = $('wsrc'), p = t.selectionStart; t.value = t.value.slice(0, p) + b.dataset.c + t.value.slice(t.selectionEnd); t.focus(); t.selectionStart = t.selectionEnd = p + b.dataset.c.length; write(); };
+function wHint() {
+  $('whint').textContent = wmode === 'sound' ? 'English words and names are written by their sound; Bible names use their Bible spelling where the dictionary knows them.' : wscript === 'grk' ? 'Type Greek, Beta Code (e)n a)rxh=|), or a transliteration (logos, agape): Bible words are found by their transliteration.' : 'Type pointed Hebrew, or a transliteration (bereshit, shalom): Bible words are found by their transliteration, other words are spelled letter by letter.';
+  $('wex').innerHTML = (wmode === 'sound' ? WEXS : WEX)[wscript].map(function (t) { return '<span class="tag" style="cursor:pointer;font-size:13px" data-t="' + esc(t) + '">' + esc(t) + '</span>'; }).join(' ');
+}
+$('wex').onclick = function (e) { var t = e.target.closest('[data-t]'); if (t) { $('wsrc').value = t.dataset.t; write(); } };
+seg('wscript', function (b) { wscript = b.dataset.s; kbd(); wHint(); write(); });
+seg('wmode', function (b) { wmode = b.dataset.m; kbd(); wHint(); write(); });
+['wcant', 'wsep', 'wtheme', 'wsize'].forEach(function (id) { $(id).onchange = write; });
+var wt = null; $('wsrc').oninput = function () { clearTimeout(wt); wt = setTimeout(write, 250); };
+function setWrite(script, text) { wscript = script; wmode = 'text'; [].forEach.call($('wscript').children, function (x) { x.classList.toggle('on', x.dataset.s === script); }); [].forEach.call($('wmode').children, function (x) { x.classList.toggle('on', x.dataset.m === 'text'); }); $('wsrc').value = text; kbd(); wHint(); show('write'); }
+function bibleName(word, lang) { // a name the dictionary knows: its Bible spelling
+  var lx = lang === 'heb' ? LEXH : LEXG, ix = BL.data[lang === 'heb' ? 'enHeb' : 'enGrk']; if (!lx || !ix) return null;
+  var ks = ix[word.toLowerCase()] || [];
+  for (var i = 0; i < ks.length; i++) { var e = lx[ks[i]]; if (e && /N-.?P|-P$|N--P/.test(e[2] || '') && e[3].toLowerCase().indexOf(word.toLowerCase()) === 0) return { text: BL.stripCantillation(e[0]), key: ks[i] }; }
+  return null;
+}
+function write() {
+  if (!READY) return;
+  var src = $('wsrc').value, words = [], lang = wscript === 'grk' ? 'grk' : 'heb';
+  if (wmode === 'sound') {
+    src.split(/\s+/).filter(Boolean).forEach(function (w) {
+      var bn = MORE ? bibleName(w.replace(/[^A-Za-z']/g, ''), lang) : null;
+      if (bn) { words.push({ src: w, text: bn.text, how: 'Bible name' }); return; }
+      var r = lang === 'heb' ? BL.hebrewBySound(w) : BL.greekBySound(w); words.push({ src: w, text: r.text, how: 'by sound (' + r.source + ')' });
+    });
+  } else words = lang === 'heb' ? BL.hebrewFromInput(src) : BL.greekFromInput(src);
+  var text = lang === 'heb' ? BL.joinWords(words.map(function (w) { return w.text; })) : words.map(function (w) { return w.text; }).join(' ');
+  if (wscript === 'phn') text = BL.toPaleo(text, $('wsep').checked);
+  var opts = { script: wscript, theme: $('wtheme').value, size: +$('wsize').value, width: 900, noCant: !$('wcant').checked, sep: $('wsep').checked };
+  lastSVG = text.trim() ? BL.render(text, opts) : '';
+  $('stage').innerHTML = lastSVG || '<div class="hint" style="padding:30px">Nothing to write yet.</div>';
+  var shown = wscript === 'heb' && opts.noCant ? BL.stripCantillation(text) : text;
+  $('wuni').className = 'text ' + (wscript === 'grk' ? 'grk' : wscript === 'phn' ? 'phn' : 'heb'); $('wuni').textContent = shown;
+  $('wtr').textContent = wscript === 'grk' ? BL.translitGreek(text) : BL.translitHebrew(wscript === 'phn' ? BL.fromPaleo(text) : text);
+  var tb = $('wwords').querySelector('tbody'); tb.innerHTML = '';
+  words.forEach(function (w) {
+    var lk = (BL.data.byHebForm || BL.data.byGrkForm) ? lookupOne(w.text, lang) : null;
+    tb.insertAdjacentHTML('beforeend', '<tr><td><span class="' + lang + '" style="font-size:20px">' + esc(wscript === 'phn' ? BL.toPaleo(w.text) : w.text) + '</span><br><span class="hint">' + esc(w.src) + '</span></td><td><span class="tag ' + (/Bible/.test(w.how) ? 'w' : /sound|letter/.test(w.how) ? 'nm' : '') + '">' + esc(w.how) + '</span></td><td>' + (lk ? '<b class="' + lang + '">' + esc(lk.lemma) + '</b> ' + esc(lk.gloss) + ' <span class="tag">' + esc(lk.key) + '</span>' : '<span class="hint">—</span>') + '</td></tr>');
+  });
+  if (!lastSVG) return;
+  var d = BL.readSVG(lastSVG), want = (wscript === 'heb' && opts.noCant ? BL.stripCantillation(text) : text).normalize('NFC').replace(/\s+/g, ' ').trim();
+  var ok = d.ok && d.text.replace(/\s+/g, ' ').trim() === want;
+  badge('chk1', ok ? 'ok' : 'bad', ok ? 'SVG read-back: exact' : 'SVG read-back: ' + (d.ok ? 'differs' : 'not read'));
+  badge('chk2', 'wait', 'Image read-back: checking…');
+  var t = ++tok;
+  // the image check reads letters and vowel points: draw it without cantillation
+  var imgSVG = wscript === 'heb' && !opts.noCant ? BL.render(text, Object.assign({}, opts, { noCant: true })) : lastSVG;
+  setTimeout(function () { toImageData(imgSVG, 1).then(function (id) { if (t !== tok) return; var r = BL.readImage(id, wscript), w2 = wscript === 'heb' ? BL.stripCantillation(want) : want, got = (r.text || '').replace(/\s+/g, ' ').trim();
+    var same = r.ok && got === w2, bare = r.ok && (wscript === 'heb' ? BL.stripPoints(got) === BL.stripPoints(w2) : wscript === 'grk' ? BL.stripAccents(got) === BL.stripAccents(w2) : false);
+    badge('chk2', same ? 'ok' : bare ? 'wait' : 'bad', same ? 'Image read-back: exact' + (wscript === 'heb' && !opts.noCant ? ' (letters and vowels)' : '') : bare ? 'Image read-back: letters right, some marks differ' : 'Image read-back: ' + (r.ok ? 'differs' : 'not read')); }); }, 300);
+}
+function lookupOne(w, lang) { var r = BL.lookupWords ? null : null; var arr = lang === 'heb' ? readWords(w, 'heb') : readWords(w, 'grk'); return arr[0] && arr[0].key ? arr[0] : null; }
+function readWords(t, lang) { var fake = BL.readSVG ? null : null; return (function () { var res = []; t.split(/\s+/).filter(Boolean).forEach(function (w) { var o = { text: w }; if (lang === 'heb') { var p = BL.stripCantillation(w).replace(/[־׃]/g, ''), bk = BL.stripPoints(w).replace(/[־׃׀]/g, ''), k = BL.data.byHebForm && (BL.data.byHebForm[p] || BL.data.byHebBare[bk]); if (k) { o.key = k; var e = LEXH[k]; if (e) { o.lemma = e[0]; o.gloss = e[3]; } } } else { var g = BL.stripAccents(w).toLowerCase().replace(/[^α-ως]/g, '').replace(/ς/g, 'σ'), k2 = BL.data.byGrkForm && BL.data.byGrkForm[g]; if (k2) { o.key = k2; var e2 = LEXG[k2]; if (e2) { o.lemma = e2[0]; o.gloss = e2[3]; } } } res.push(o); }); return res; })(); }
+function badge(id, cls, txt) { var b = $(id); b.className = 'badge ' + cls; b.textContent = txt; }
+function loadImg(src) { return new Promise(function (res, rej) { var i = new Image(); i.onload = function () { res(i); }; i.onerror = rej; i.src = src; }); }
+function svgCanvas(svg, scale) { return loadImg('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)).then(function (im) { var c = document.createElement('canvas'); c.width = Math.round(im.width * scale); c.height = Math.round(im.height * scale); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); return c; }); }
+function toImageData(svg, scale) { return svgCanvas(svg, scale).then(function (c) { return c.getContext('2d').getImageData(0, 0, c.width, c.height); }); }
+function download(name, blob) { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+function fname(ext) { var b = ($('wtr').textContent || 'text').normalize('NFD').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'text'; return 'BibleStudio-' + b + '.' + ext; }
+$('dlsvg').onclick = function () { if (lastSVG) download(fname('svg'), new Blob([lastSVG], { type: 'image/svg+xml' })); };
+$('dlpng').onclick = function () { if (lastSVG) svgCanvas(lastSVG, 2).then(function (c) { c.toBlob(function (b) { download(fname('png'), b); }, 'image/png'); }); };
+$('cpuni').onclick = function () { var t = $('wuni').textContent, btn = this; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy text'; }, 1200); }, function () {}); };
+/* ---------------- Translate */
+var TEX = ['In the beginning God created the heavens and the earth.', 'The Lord is my shepherd.', 'God loves you.', 'Jesus Christ is God.', 'The word was with God.', 'David the king built a house for the Lord.', 'My father gave me bread.'];
+$('tex').innerHTML = TEX.map(function (t) { return '<span class="tag" style="cursor:pointer;font-size:13px" data-t="' + esc(t) + '">' + esc(t) + '</span>'; }).join(' ');
+$('tex').onclick = function (e) { var t = e.target.closest('[data-t]'); if (t) { $('tsrc').value = t.dataset.t; translate(); } };
+var tt = null; $('tsrc').oninput = function () { clearTimeout(tt); tt = setTimeout(translate, 300); };
+function draftHTML(r, lang) {
+  var h = '<div class="text ' + lang + '" style="font-size:' + (lang === 'heb' ? 30 : 24) + 'px">' + esc(r.text) + '</div>';
+  h += '<div class="lat" style="margin-top:6px">' + esc(lang === 'heb' ? BL.translitHebrew(r.text) : BL.translitGreek(r.text)) + '</div>';
+  if (lang === 'heb') h += '<div class="hint" style="margin-top:6px">Paleo-Hebrew: <span class="phn" style="font-size:22px">' + esc(BL.toPaleo(r.text, true)) + '</span></div>';
+  h += '<div class="row" style="margin-top:8px"><span class="hint">Confidence</span><div class="conf" style="flex:1;max-width:240px"><i style="width:' + Math.round(r.confidence * 100) + '%"></i></div><b>' + Math.round(r.confidence * 100) + '%</b><button class="b" data-w="' + lang + '">Write this</button></div>';
+  r.sentences.forEach(function (s) {
+    h += '<h3>' + esc(s.english) + '</h3><table><tr><th>English</th><th>' + (lang === 'heb' ? 'Hebrew' : 'Greek') + '</th><th>How</th></tr>';
+    s.words.forEach(function (w) { h += '<tr><td>' + esc(w.en) + '</td><td class="' + lang + '" style="font-size:19px">' + esc(w.text) + '</td><td class="hint">' + esc(w.how) + (w.gloss ? ': ' + esc(w.gloss) : '') + (w.key ? ' <span class="tag">' + esc(w.key) + '</span>' : '') + '</td></tr>'; });
+    h += '</table>'; s.notes.forEach(function (n) { h += '<div class="note">' + esc(n) + '</div>'; });
+  });
+  return h;
+}
+function translate() {
+  if (!MORE) { $('th').innerHTML = $('tg').innerHTML = '<span class="loading">Loading word forms…</span>'; return; }
+  var t = $('tsrc').value, rh = BL.translate(t, 'heb'), rg = BL.translate(t, 'grk');
+  $('th').innerHTML = draftHTML(rh, 'heb'); $('tg').innerHTML = draftHTML(rg, 'grk');
+  [['th', rh, 'heb'], ['tg', rg, 'grk']].forEach(function (x) { var b = $(x[0]).querySelector('[data-w]'); if (b) b.onclick = function () { setWrite(x[2], x[1].text); }; });
+}
+/* ---------------- Dictionary */
+var dlang = 'all';
+seg('dlang', function (b) { dlang = b.dataset.l; dsearch(); });
+var dt = null; $('dq').oninput = function () { clearTimeout(dt); dt = setTimeout(dsearch, 250); };
+function plain(s) { return s.normalize('NFD').replace(/[̀-֑ͯ-ׇ]/g, '').toLowerCase(); }
+function dsearch() {
+  var q = $('dq').value.trim(); if (!q || !LEXH) { $('dres').innerHTML = ''; $('dstat').textContent = ''; return; }
+  var res = [], ql = q.toLowerCase(), qp = plain(q), isKey = /^[HGhg]\d+[A-Za-z]?$/.test(q);
+  [['heb', LEXH], ['grk', LEXG]].forEach(function (L) {
+    if (dlang !== 'all' && dlang !== L[0]) return;
+    Object.keys(L[1]).forEach(function (k) {
+      var e = L[1][k], s = 0;
+      if (isKey) { var kk = q.toUpperCase().replace(/^([HG])(\d+)/, function (m, a, n) { return a + ('0000' + n).slice(-4); }); if (k === kk || k.replace(/[A-Za-z]$/, '') === kk) s = 100; }
+      else {
+        if (plain(e[0]) === qp) s = 100; else if (plain(e[1]).replace(/[^a-z]/g, '') === qp.replace(/[^a-z]/g, '')) s = 90;
+        else { var g = e[3].toLowerCase(); if (new RegExp('(^|[;,/:] ?)(to )?' + ql.replace(/[^a-z ]/g, '') + '($|[;,/)(])').test(g)) s = 70; else if (ql.length > 2 && g.indexOf(ql) >= 0) s = 25; }
+      }
+      if (s) res.push([s + Math.min(20, Math.log(1 + (e[4] || e[5] || 0)) * 2), L[0], k, e]);
+    });
+  });
+  res.sort(function (a, b) { return b[0] - a[0]; });
+  $('dstat').textContent = res.length + ' found';
+  $('dres').innerHTML = res.slice(0, 60).map(function (r) { var e = r[3]; return '<div class="dictent" data-k="' + r[2] + '" data-l="' + r[1] + '"><span class="' + r[1] + '" style="font-size:20px">' + esc(e[0]) + '</span> <span class="hint">' + esc(e[1]) + '</span> <span class="tag">' + esc(r[2]) + '</span> <span class="tag">' + (r[1] === 'heb' ? (/^A|Aram/.test(e[2]) ? 'Aramaic' : 'Hebrew') : 'Greek') + '</span><br>' + esc(e[3]) + '</div>'; }).join('');
+}
+$('dres').onclick = function (e) { var d = e.target.closest('.dictent'); if (d) entry(d.dataset.k, d.dataset.l); };
+function entry(k, lang) {
+  var e = lang === 'heb' ? LEXH[k] : LEXG[k], el = $('dent'); if (!e) { el.textContent = 'Not in the dictionary: ' + k; return; }
+  var n = (CONC.n && CONC.n[k]) || '';
+  var h = '<div class="text ' + lang + '" style="font-size:34px">' + esc(e[0]) + '</div><table><tr><th>Transliteration</th><td>' + esc(e[1]) + '</td></tr><tr><th>Part of speech</th><td>' + esc(e[2]) + '</td></tr><tr><th>Meaning</th><td>' + esc(e[3]) + '</td></tr><tr><th>Number</th><td>' + esc(k) + '</td></tr>';
+  if (lang === 'heb') { h += '<tr><th>Paleo-Hebrew</th><td class="phn" style="font-size:22px">' + esc(BL.toPaleo(e[0])) + '</td></tr>'; var gk = H2G && (H2G[k] || H2G[k.replace(/[A-Za-z]$/, '')]); if (gk && gk.length) h += '<tr><th>In the Septuagint</th><td>' + gk.slice(0, 8).map(function (g) { var ge = LEXG[g]; return ge ? '<a href="#" data-g="' + g + '" class="grk">' + esc(ge[0]) + '</a> <span class="hint">' + esc(ge[3]) + '</span>' : ''; }).join('<br>') + '<div class="hint">Greek words Abbott-Smith lists as translating this word in the Septuagint.</div></td></tr>'; }
+  h += '</table><div class="row" style="margin-top:8px"><button class="b" id="dconc">Every occurrence</button></div><div class="lex" id="ddef"></div>';
+  el.innerHTML = h;
+  el.querySelectorAll('a[data-g]').forEach(function (a) { a.onclick = function (ev) { ev.preventDefault(); entry(a.dataset.g, 'grk'); }; });
+  $('dconc').onclick = function () { $('cq').value = k; show('conc'); concordance(); };
+  defn(k, lang, $('ddef'), false);
+}
+/* ---------------- Concordance */
+function concData(c) { if (!CONC[c]) CONC[c] = getJSON('data/conc/' + c + '.json'); return CONC[c]; }
+$('cgo').onclick = concordance; $('cq').onkeydown = function (e) { if (e.key === 'Enter') concordance(); };
+function resolveKeys(q) {
+  q = q.trim(); if (!q) return [];
+  if (/^[HGhg]\d+[A-Za-z]?$/.test(q)) { var kk = q.toUpperCase().replace(/^([HG])(\d+)/, function (m, a, n) { return a + ('0000' + n).slice(-4); }); var all = Object.keys(q[0].toUpperCase() === 'H' ? LEXH : LEXG).filter(function (k) { return k === kk || k.replace(/[A-Za-z]$/, '') === kk; }); return all.length ? all : [kk]; }
+  var qp = plain(q), out = [];
+  [LEXH, LEXG].forEach(function (L) { Object.keys(L).forEach(function (k) { if (plain(L[k][0]) === qp) out.push(k); }); });
+  if (!out.length && /^[a-z ]+$/i.test(q)) { ['heb', 'grk'].forEach(function (lang) { var r = BL.lookupEnglish(q, lang, ''); if (r) out.push(r.key); }); }
+  if (!out.length) Object.keys(LEXG).forEach(function (k) { if (LEXG[k][0] === q) out.push(k); });
+  return out.length ? out : [q];
+}
+function unpack(s) { return s ? s.split(' ').map(function (x) { return parseInt(x, 36); }) : []; }
+function concordance() {
+  var keys = resolveKeys($('cq').value), corp = [['ot', $('cot').checked], ['lxx', $('clxx').checked], ['nt', $('cnt').checked]].filter(function (x) { return x[1]; }).map(function (x) { return x[0]; });
+  $('cstat').innerHTML = '<span class="loading">Searching…</span>'; $('cres').innerHTML = '';
+  Promise.all(corp.map(concData)).then(function (cs) {
+    var refs = [];
+    cs.forEach(function (c, i) { keys.forEach(function (k) { unpack(c[k]).forEach(function (r) { refs.push(r); }); }); });
+    refs = refs.filter(function (r, i) { return refs.indexOf(r) === i; }).sort(function (a, b) { return a - b; });
+    var label = keys.map(function (k) { var e = LEXH[k] || LEXG[k]; return e ? e[0] + ' (' + k + ', ' + e[3] + ')' : k; }).join(', ');
+    $('cstat').textContent = refs.length + ' verse' + (refs.length === 1 ? '' : 's') + ' with ' + label + (refs.length > 300 ? ' — showing the first 300' : '');
+    var show2 = refs.slice(0, 300), byBook = {};
+    show2.forEach(function (r) { var bi = r >> 16; (byBook[bi] = byBook[bi] || []).push(r); });
+    return Promise.all(Object.keys(byBook).map(function (bi) { var b = BOOKS[+bi]; return bookData(b.id).then(function (d) { return byBook[bi].map(function (r) { var c = (r >> 8) & 255, v = r & 255, ws = (d[c] || {})[v] || []; return { b: b, c: c, v: v, ws: ws, r: r }; }); }); })).then(function (lists) {
+      var rows = [].concat.apply([], lists).sort(function (a, b) { return a.r - b.r; });
+      $('cres').innerHTML = rows.map(function (x) {
+        var heb = x.b.lang === 'heb';
+        var t = x.ws.map(function (w) { var k = x.b.corpus === 'ot' ? ((/\{(H\d+[A-Za-z]?)\}/.exec(w[3]) || [])[1] || '') : w[3], s = heb ? BL.stripCantillation(w[0].replace(/\//g, '')) : w[0]; return keys.indexOf(k) >= 0 ? '<span class="hit">' + esc(s) + '</span>' : esc(s); }).join(' ');
+        return '<div class="r"><span class="ref" data-ref="' + x.b.id + ' ' + x.c + ':' + x.v + '">' + esc(x.b.name) + ' ' + x.c + ':' + x.v + '</span><span class="' + (heb ? 'heb' : 'grk') + '" style="font-size:' + (heb ? 21 : 18) + 'px">' + t + '</span></div>';
+      }).join('');
+    });
+  }).catch(function (e) { $('cstat').textContent = e.message; });
+}
+$('cres').onclick = function (e) { var r = e.target.closest('[data-ref]'); if (r) goRef(r.dataset.ref); };
+/* ---------------- Reader */
+var drop = $('drop');
+drop.onclick = function () { $('file').click(); };
+drop.ondragover = function (e) { e.preventDefault(); drop.classList.add('over'); };
+drop.ondragleave = function () { drop.classList.remove('over'); };
+drop.ondrop = function (e) { e.preventDefault(); drop.classList.remove('over'); if (e.dataTransfer.files[0]) readFile(e.dataTransfer.files[0]); };
+$('file').onchange = function () { if (this.files[0]) readFile(this.files[0]); this.value = ''; };
+document.addEventListener('paste', function (e) { if (!$('v-reader').classList.contains('on')) return; var it = [].filter.call(e.clipboardData.items || [], function (i) { return /^image\//.test(i.type); })[0]; if (it) readFile(it.getAsFile()); });
+function showRead(r, how) {
+  var o = $('rout');
+  if (!r.ok) { o.innerHTML = '<div class="note">' + esc(r.reason) + '</div>'; return; }
+  var cls = r.script === 'grk' ? 'grk' : r.script === 'phn' ? 'phn' : 'heb';
+  var h = '<div class="row"><span class="badge ok">' + esc(how) + '</span><span class="hint">' + ({ heb: 'Hebrew', grk: 'Greek', phn: 'Paleo-Hebrew' }[r.script]) + (r.letters ? ', ' + r.letters + ' letters' : '') + '</span></div>';
+  h += '<div class="text ' + cls + '">' + esc(r.text) + '</div>';
+  if (r.hebrew) h += '<h3>In square Hebrew letters</h3><div class="text heb">' + esc(r.hebrew) + '</div>';
+  if (r.paleo) h += '<h3>Paleo-Hebrew</h3><div class="text phn">' + esc(r.paleo) + '</div>';
+  h += '<h3>Transliteration</h3><div class="lat">' + esc(r.translit) + '</div>';
+  if (r.confidence < 1) h += '<div class="row" style="margin-top:8px"><span class="hint">Shape match</span><div class="conf" style="flex:1;max-width:260px"><i style="width:' + Math.round(r.confidence * 100) + '%"></i></div><b>' + Math.round(r.confidence * 100) + '%</b></div>';
+  if (r.uncertain) h += '<div class="note">' + r.uncertain + ' letter(s) or mark(s) were close calls. Check them against the image.</div>';
+  var lang = r.script === 'grk' ? 'grk' : 'heb';
+  h += '<h3>Words</h3><table><tr><th>Word</th><th>Dictionary</th></tr>' + readWords(r.script === 'phn' ? r.hebrew : r.text, lang).map(function (w) { return '<tr><td class="' + lang + '" style="font-size:19px">' + esc(w.text) + '</td><td>' + (w.key ? '<b class="' + lang + '">' + esc(w.lemma) + '</b> ' + esc(w.gloss) + ' <span class="tag">' + esc(w.key) + '</span>' : '<span class="hint">not found</span>') + '</td></tr>'; }).join('') + '</table>';
+  o.innerHTML = h;
+}
+function readFile(f) {
+  var o = $('rout'); o.innerHTML = '<span class="loading">Working…</span>';
+  var isSVG = /svg/.test(f.type) || /\.svg$/i.test(f.name || ''), fr = new FileReader();
+  if (isSVG) { fr.onload = function () { var txt = fr.result; $('preview').src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(txt); $('preview').style.display = 'block'; var r = BL.readSVG(txt); if (r.ok) return showRead(r, 'Read exactly from the SVG outlines'); toImageData(txt, 2).then(function (id) { showRead(BL.readImage(id, 'auto'), 'Read from the rendered SVG image'); }, function () { showRead(r); }); }; fr.readAsText(f); }
+  else { fr.onload = function () { $('preview').src = fr.result; $('preview').style.display = 'block'; loadImg(fr.result).then(function (im) { var sc = Math.min(1, 2400 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * sc); c.height = Math.round(im.height * sc); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); setTimeout(function () { showRead(BL.readImage(c.getContext('2d').getImageData(0, 0, c.width, c.height), 'auto'), 'Read from the image by shape'); }, 20); }, function () { o.innerHTML = '<div class="note">That file could not be opened as an image.</div>'; }); }; fr.readAsDataURL(f); }
+}
+var pt = null; $('ptext').oninput = function () { clearTimeout(pt); pt = setTimeout(function () {
+  var t = $('ptext').value.trim(); if (!t) return;
+  var script = /[א-ת]/.test(t) ? 'heb' : /[\u{10900}-\u{1091F}]/u.test(t) ? 'phn' : 'grk';
+  var r = { ok: true, text: t.normalize('NFC'), script: script, confidence: 1 };
+  if (script === 'heb') { r.translit = BL.translitHebrew(t); r.paleo = BL.toPaleo(t); } else if (script === 'phn') { r.hebrew = BL.fromPaleo(t); r.translit = BL.translitHebrew(r.hebrew); } else r.translit = BL.translitGreek(t);
+  showRead(r, 'Pasted text');
+}, 300); };
+/* ---------------- Self-test */
+$('runtest').onclick = function () {
+  var out = $('testout'), lines = [], btn = this; btn.disabled = true; out.textContent = 'Running…';
+  function log(s) { lines.push(s); out.textContent = lines.join('\n'); }
+  var pass = 0, fail = 0, t0 = performance.now();
+  function check(name, ok, detail) { if (ok) pass++; else fail++; log((ok ? 'PASS  ' : 'FAIL  ') + name + (detail ? '  ' + detail : '')); }
+  var samples = [['heb', 'Gen', 1, 1], ['heb', 'Psa', 23, 1], ['heb', 'Isa', 53, 5], ['heb', 'Dan', 2, 4], ['grk', 'Jhn', 1, 1], ['grk', 'Rom', 8, 28], ['grk', 'LXXGen', 1, 1], ['grk', 'LXXPs', 22, 1]];
+  Promise.all(samples.map(function (s) { return bookData(s[1]).then(function (d) { return [s, d[s[2]][s[3]]]; }); })).then(function (vs) {
+    vs.forEach(function (x) {
+      var s = x[0], ws = x[1], heb = s[0] === 'heb', text = heb ? BL.joinWords(ws.map(function (w) { return w[0].replace(/\//g, ''); })) : ws.map(function (w) { return w[0]; }).join(' ');
+      var r = BL.readSVG(BL.render(text, { script: s[0], size: 36, width: 900 }));
+      check('SVG read-back ' + s[1] + ' ' + s[2] + ':' + s[3], r.ok && r.text.replace(/\s+/g, ' ') === text.normalize('NFC').replace(/\s+/g, ' '));
+      if (heb) { var p = BL.toPaleo(text, true), rp = BL.readSVG(BL.render(p, { script: 'phn', size: 36, width: 900 })); check('Paleo-Hebrew read-back ' + s[1] + ' ' + s[2] + ':' + s[3], rp.ok && rp.text.replace(/\s+/g, ' ') === p); }
+    });
+    check('Transliteration בְּרֵאשִׁית', BL.translitHebrew('בְּרֵאשִׁית') === 'bereshit', BL.translitHebrew('בְּרֵאשִׁית'));
+    check('Transliteration λόγος', BL.translitGreek('Ἐν ἀρχῇ ἦν ὁ λόγος') === 'En archēi ēn ho logos', BL.translitGreek('Ἐν ἀρχῇ ἦν ὁ λόγος'));
+    check('Beta Code', BL.betaToGreek('e)n a)rxh=|') === 'ἐν ἀρχῇ', BL.betaToGreek('e)n a)rxh=|'));
+    check('Paleo-Hebrew letters', BL.toPaleo('שָׁלוֹם') === '𐤔𐤋𐤅𐤌', BL.toPaleo('שָׁלוֹם'));
+    [['In the beginning God created the heavens and the earth.', 'heb', 'בְּרֵאשִׁית בָּרָא אֱלֹהִים אֶת הַשָּׁמַיִם וְהָאָרֶץ'], ['The LORD is my shepherd.', 'heb', 'יְהֹוָה רֹעִי'], ['God is love.', 'grk', 'ὁ θεός ἐστιν ἀγάπη'], ['God loves you.', 'grk', 'ὁ θεὸς ἀγαπᾷ σε']].forEach(function (c) { var t = BL.translate(c[0], c[1]).text; check('Draft ' + c[1] + ' "' + c[0] + '"', t.normalize('NFC').indexOf(c[2].normalize('NFC')) >= 0, t); });
+    log('Image read-back (drawn here, then read from pixels)…');
+    var imgs = [['heb', 'שְׁמַע יִשְׂרָאֵל יְהוָה אֱלֹהֵינוּ יְהוָה אֶחָד', 'parchment', 1], ['grk', 'Ἐν ἀρχῇ ἦν ὁ λόγος, καὶ ὁ λόγος ἦν πρὸς τὸν θεόν', 'night', 1.5], ['phn', BL.toPaleo('בְּרֵאשִׁית בָּרָא אֱלֹהִים', true), 'stone', 1]];
+    var chain = Promise.resolve();
+    imgs.forEach(function (c) { chain = chain.then(function () { return toImageData(BL.render(c[1], { script: c[0], theme: c[2], size: 40, width: 900 }), c[3]).then(function (id) { var r = BL.readImage(id, 'auto'); check('Image ' + c[0] + ' ' + c[2] + ' x' + c[3], r.ok && r.text.replace(/\s+/g, ' ').trim() === c[1], r.ok ? r.text : r.reason); }); }); });
+    return chain;
+  }).then(function () { log('\n' + pass + ' passed, ' + fail + ' failed, ' + Math.round(performance.now() - t0) + ' ms'); btn.disabled = false; }).catch(function (e) { log('Error: ' + e.message); btn.disabled = false; });
+};
+/* ---------------- start */
+(async function () {
+  try {
+    var hb = hbjs(await createHarfBuzz({ locateFile: function (f) { return 'vendor/' + f; } }));
+    BL.setShaper(hb);
+    var r = await Promise.all([getJSON('data/books.json'), getJSON('data/glyphs.json'), getJSON('data/lex/heb.json'), getJSON('data/lex/grk.json')].concat(['BLHebrew', 'BLGreek', 'BLPaleo'].map(function (f) { return fetch('fonts/' + f + '.ttf').then(function (x) { return x.arrayBuffer(); }); })));
+    BOOKS = r[0]; BOOKS.forEach(function (b) { BYID[b.id] = b; });
+    BL.loadGlyphs(r[1]); LEXH = r[2]; LEXG = r[3]; BL.load('lexHeb', LEXH); BL.load('lexGrk', LEXG);
+    BL.loadFont('heb', new Uint8Array(r[4])); BL.loadFont('grk', new Uint8Array(r[5])); BL.loadFont('phn', new Uint8Array(r[6]));
+    READY = true;
+    $('ver').textContent = 'engine ' + BL.version + ' · ' + BOOKS.filter(function (b) { return b.corpus === 'ot'; }).length + ' OT, ' + BOOKS.filter(function (b) { return b.corpus === 'lxx'; }).length + ' Septuagint, ' + BOOKS.filter(function (b) { return b.corpus === 'nt'; }).length + ' NT books · ' + Object.keys(LEXH).length.toLocaleString('en-AU') + ' Hebrew/Aramaic + ' + Object.keys(LEXG).length.toLocaleString('en-AU') + ' Greek dictionary entries';
+    fillBooks(); showChapter(); kbd(); wHint();
+    var m = await Promise.all(['tr_heb', 'tr_grk', 'en_heb', 'en_grk', 'forms_heb', 'forms_grk', 'grk_keylemma', 'heb2grk'].map(function (f) { return getJSON('data/lex/' + f + '.json'); }).concat([fetch('data/cmu.tsv').then(function (x) { return x.text(); })]));
+    BL.load('trHeb', m[0]); BL.load('trGrk', m[1]); BL.load('enHeb', m[2]); BL.load('enGrk', m[3]); BL.load('formsHeb', m[4]); BL.load('formsGrk', m[5]); BL.load('keyLemma', m[6]); H2G = m[7]; BL.load('cmu', m[8]); BL.indexForms();
+    MORE = true; write(); if ($('v-translate').classList.contains('on')) translate();
+  } catch (e) { $('ver').textContent = 'Loading failed: ' + e.message; $('text').innerHTML = '<div class="note">The studio data could not be loaded. Open it through the Bible Languages Studio server (http://localhost:8769/).</div>'; }
+})();
+})();
+</script>
+</body>
+</html>
