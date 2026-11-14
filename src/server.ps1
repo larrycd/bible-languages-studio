@@ -8,13 +8,21 @@
 param(
     [int]$Port = 8769,
     [string]$Root = '',
-    [switch]$Open
+    [switch]$Open,
+    [string]$MyDir = ''
 )
 $ErrorActionPreference = 'Stop'
-$Version = '1.0.0'
+$Version = '1.0.4'
 if (-not $Root) { $Root = Join-Path $PSScriptRoot 'app' }
 $Root = [System.IO.Path]::GetFullPath($Root)
 if (-not (Test-Path -LiteralPath (Join-Path $Root 'index.html'))) { throw "Bible Languages Studio files not found in $Root" }
+# Your own translations (for example your personal ESV or CSB) live outside the studio, in your Documents folder.
+# They are only read from there; the studio, its installer and its releases never contain them.
+if (-not $MyDir) {
+    $docs = [Environment]::GetFolderPath('MyDocuments')
+    if (-not $docs -and $env:USERPROFILE) { $docs = Join-Path $env:USERPROFILE 'Documents' }
+    if ($docs) { $MyDir = Join-Path $docs 'bible-languages-studio-my-translations' }
+}
 
 $Mime = @{
     '.html' = 'text/html; charset=utf-8'; '.js' = 'application/javascript; charset=utf-8'; '.json' = 'application/json; charset=utf-8'
@@ -53,6 +61,29 @@ try {
             if ($path -eq '/api/health') {
                 $json = '{"name":"Bible Languages Studio","version":"' + $Version + '","author":"Larry Dalton","port":' + $Port + '}'
                 Send-Text $res $json 'application/json; charset=utf-8'; continue
+            }
+            if ($path -eq '/my/list') {
+                $items = @()
+                if ($MyDir -and (Test-Path -LiteralPath $MyDir -PathType Container)) {
+                    foreach ($f in Get-ChildItem -LiteralPath $MyDir -Filter '*.json' -File | Sort-Object Name) {
+                        $abbr = $f.BaseName; $name = ''
+                        try {
+                            $fs = [System.IO.File]::OpenRead($f.FullName); $buf = New-Object byte[] 600; $n = $fs.Read($buf, 0, 600); $fs.Close()
+                            $head = [System.Text.Encoding]::UTF8.GetString($buf, 0, $n)
+                            if ($head -match '"abbr"\s*:\s*"([^"]{1,20})"') { $abbr = $Matches[1] }
+                            if ($head -match '"name"\s*:\s*"([^"]{1,80})"') { $name = $Matches[1] }
+                        } catch { }
+                        $items += ('{"file":"' + $f.Name.Replace('\', '\\').Replace('"', '\"') + '","abbr":"' + $abbr.Replace('"', '') + '","name":"' + $name.Replace('"', '') + '"}')
+                    }
+                }
+                Send-Text $res ('[' + ($items -join ',') + ']') 'application/json; charset=utf-8'; continue
+            }
+            if ($path -like '/my/*') {
+                $name = $path.Substring(4)
+                if (-not $MyDir) { Send-Text $res 'Not found' -Status 404; continue }
+                $mf = Join-Path $MyDir $name
+                if ($name -notmatch '^[A-Za-z0-9 ._()-]{1,80}\.json$' -or -not (Test-Path -LiteralPath $mf -PathType Leaf)) { Send-Text $res 'Not found' -Status 404; continue }
+                Send-Bytes $res ([System.IO.File]::ReadAllBytes($mf)) 'application/json; charset=utf-8'; continue
             }
             if ($path -eq '/' -or $path -eq '') { $path = '/index.html' }
             $rel = $path.TrimStart('/').Replace('/', '\')
