@@ -62,6 +62,8 @@ th { color:var(--dim); font-weight:600; font-size:11px; text-transform:uppercase
 #stage svg { max-width:100%; height:auto; display:block; margin:auto; }
 /* Bible reader */
 .verse { padding:6px 4px; border-bottom:1px solid #2a2219; }
+.verse .en { direction:ltr; text-align:left; font:15px/1.5 "Segoe UI", sans-serif; color:#d9ccb3; margin:0 4px 2px; unicode-bidi:isolate; }
+.verse .en.only { color:var(--dim); font-style:italic; }
 .verse .vn { color:var(--gold); font:600 12px "Segoe UI", sans-serif; vertical-align:super; margin:0 4px; direction:ltr; unicode-bidi:isolate; }
 .verse.heb .vt { font-family:BLHebrew; font-size:26px; line-height:2.1; direction:rtl; }
 .verse.grk .vt { font-family:BLGreek; font-size:21px; line-height:1.8; }
@@ -75,6 +77,11 @@ th { color:var(--dim); font-weight:600; font-size:11px; text-transform:uppercase
 .par { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .par > div { min-width:0; }
 .wordpanel { position:sticky; top:10px; }
+/* Bible page on a wide screen: the Scripture pane scrolls on its own and the Word pane stays put */
+@media (min-width:1151px) {
+  #biblegrid { height:var(--bibleh, 70vh); align-items:stretch; }
+  #biblegrid > section { overflow-y:auto; margin-bottom:0; position:static; overscroll-behavior:contain; }
+}
 .lex { font-size:13.5px; line-height:1.55; max-height:56vh; overflow:auto; }
 .lex .h { font-family:BLHebrew; font-size:17px; } .lex .g { font-family:BLGreek; }
 .lex a[data-r] { cursor:pointer; text-decoration:underline dotted; }
@@ -129,11 +136,12 @@ footer { color:var(--dim); font-size:12px; padding:6px 18px 16px; border-top:1px
     <span id="hebopts"><span class="hint">Hebrew:</span>
       <select id="hebstyle"><option value="full">pointed with cantillation</option><option value="points" selected>pointed (vowels only)</option><option value="bare">consonants only</option><option value="paleo">Paleo-Hebrew script</option></select></span>
     <label class="ck"><input type="checkbox" id="inter"> Interlinear</label>
+    <span id="engwrap"><span class="hint">English:</span> <select id="eng"><option value="">off</option></select></span>
     <label class="ck" id="parwrap"><input type="checkbox" id="par"> Septuagint alongside</label>
     <span class="hint" id="bookinfo"></span>
   </div>
-  <div class="grid2">
-    <section><h2 id="chaptitle">Text</h2><div id="text"></div></section>
+  <div class="grid2" id="biblegrid">
+    <section id="textpane"><h2 id="chaptitle">Text</h2><div id="text"></div></section>
     <section class="wordpanel"><h2>Word</h2><div id="word" class="hint">Click a word to see its dictionary form, grammar, meaning and every place it occurs.</div></section>
   </div>
 </div>
@@ -230,6 +238,7 @@ footer { color:var(--dim); font-size:12px; padding:6px 18px 16px; border-top:1px
     <p><b>Bible Languages Studio</b> reads, writes and studies the languages of the Bible: <b>Biblical Hebrew</b> with vowel points (nikkud) and cantillation, the old <b>Paleo-Hebrew</b> script, and <b>Koine Greek</b> with breathings and accents. It was designed and built by <b>Larry Dalton</b>.</p>
     <ul class="hint">
       <li><b>Bible</b>: the whole Hebrew Old Testament (Westminster Leningrad Codex), the Septuagint (Swete's edition) and the Greek New Testament (SBL Greek New Testament), with every word's dictionary form, grammar and meaning; interlinear view; Septuagint alongside the Hebrew.</li>
+      <li><b>English</b>: an English line above each verse from your own translation files (for example your personal ESV or CSB). They are read from <i>Documents\bible-languages-studio-my-translations</i> on this computer and are never part of the studio, its installer or its releases.</li>
       <li><b>Write</b>: type Hebrew or Greek, a transliteration, Beta Code, or English words and names; export SVG or PNG and check that it reads back.</li>
       <li><b>Translate</b>: rule-based English drafts in Biblical Hebrew (verb first, construct chains, object marker, prefixes) and Koine Greek (cases, articles, verb endings), using forms found in the Bible.</li>
       <li><b>Dictionary</b> and <b>Concordance</b>: Brown-Driver-Briggs for Hebrew and Aramaic, Abbott-Smith for Greek, with every occurrence in the OT, Septuagint and NT.</li>
@@ -262,7 +271,9 @@ var BOOKS = [], BYID = {}, CACHE = {}, LEXH = null, LEXG = null, H2G = null, BDB
 var state = { corpus: 'ot', book: 'Gen', chap: 1 };
 /* ---------------- navigation */
 $('nav').onclick = function (e) { var b = e.target.closest('button'); if (!b) return; show(b.dataset.v); };
-function show(v) { [].forEach.call($('nav').querySelectorAll('button'), function (x) { x.classList.toggle('on', x.dataset.v === v); }); document.querySelectorAll('.view').forEach(function (x) { x.classList.toggle('on', x.id === 'v-' + v); }); if (v === 'write') write(); if (v === 'translate') translate(); }
+function fitBible() { var g = $('biblegrid'); if (!g || !g.offsetParent) return; var top = g.getBoundingClientRect().top + window.scrollY; g.style.setProperty('--bibleh', Math.max(320, window.innerHeight - top - 14) + 'px'); }
+window.addEventListener('resize', fitBible);
+function show(v) { [].forEach.call($('nav').querySelectorAll('button'), function (x) { x.classList.toggle('on', x.dataset.v === v); }); document.querySelectorAll('.view').forEach(function (x) { x.classList.toggle('on', x.id === 'v-' + v); }); if (v === 'write') write(); if (v === 'translate') translate(); if (v === 'bible') fitBible(); }
 function seg(id, fn) { $(id).onclick = function (e) { var b = e.target.closest('button'); if (!b) return; [].forEach.call(this.children, function (x) { x.classList.toggle('on', x === b); }); fn(b); }; }
 /* ---------------- Bible text */
 function fileOf(b) { return 'data/text/' + b.corpus + '_' + (b.corpus === 'lxx' ? b.id.slice(3) : b.id) + '.json'; }
@@ -274,18 +285,50 @@ function fillBooks() {
 }
 function chapList(b) { return b.chn || b.ch.map(function (_, i) { return i + 1; }); }
 function fillChaps() { var b = BYID[state.book]; $('chap').innerHTML = chapList(b).map(function (c) { return '<option>' + c + '</option>'; }).join(''); if (chapList(b).indexOf(+state.chap) < 0) state.chap = chapList(b)[0]; $('chap').value = state.chap; }
-seg('corpus', function (b) { state.corpus = b.dataset.c; state.book = null; fillBooks(); showChapter(); });
+seg('corpus', function (b) {
+  /* keep the same passage when moving between the Hebrew OT and the Septuagint; anything else starts at the first book */
+  var prev = BYID[state.book], to = b.dataset.c, m = prev ? counterpart(prev, to, +state.chap) : null;
+  state.corpus = to; state.book = m ? m.book : null; state.chap = m ? m.chap : 1; fillBooks(); showChapter();
+});
+function counterpart(prev, to, c) {
+  if (prev.corpus === 'lxx' && to === 'ot') {
+    if (prev.id === 'LXX2Esd') return c > 10 ? { book: 'Neh', chap: c - 10 } : { book: 'Ezr', chap: c };
+    if (!prev.heb) return null;
+    return { book: prev.heb, chap: prev.id === 'LXXPs' ? hebPsalm(c) : c };
+  }
+  if (prev.corpus === 'ot' && to === 'lxx') {
+    if (prev.id === 'Neh') return { book: 'LXX2Esd', chap: c + 10 };
+    var x = BOOKS.filter(function (y) { return y.corpus === 'lxx' && y.heb === prev.id; })[0];
+    return x ? { book: x.id, chap: x.id === 'LXXPs' ? lxxPsalm(c) : c } : null;
+  }
+  return null;
+}
 $('book').onchange = function () { state.book = this.value; state.chap = chapList(BYID[state.book])[0]; fillChaps(); showChapter(); };
 $('chap').onchange = function () { state.chap = +this.value; showChapter(); };
 $('prev').onclick = function () { step(-1); }; $('next').onclick = function () { step(1); };
 function step(d) { var b = BYID[state.book], cl = chapList(b), i = cl.indexOf(+state.chap) + d; if (i >= 0 && i < cl.length) { state.chap = cl[i]; $('chap').value = state.chap; showChapter(); } }
 ['hebstyle', 'inter', 'par'].forEach(function (id) { $(id).onchange = showChapter; });
+/* ---------------- English translations: your own copies in Documents\bible-languages-studio-my-translations (never part of the studio) */
+var ENG = {}, ENGLIST = [];
+function engLoad(id) { if (!ENG[id]) ENG[id] = getJSON('/my/' + encodeURIComponent(id)).catch(function (e) { delete ENG[id]; throw e; }); return ENG[id]; }
+function engInit() {
+  getJSON('/my/list').then(function (l) {
+    ENGLIST = l || []; $('engwrap').style.display = ENGLIST.length ? '' : 'none';
+    $('eng').innerHTML = '<option value="">off</option>' + ENGLIST.map(function (t) { return '<option value="' + esc(t.file) + '">' + esc(t.abbr || t.file) + (t.name ? ' \u2013 ' + esc(t.name) : '') + '</option>'; }).join('');
+    var keep = ''; try { keep = localStorage.getItem('bls-eng') || ''; } catch (e) { }
+    if (keep && ENGLIST.some(function (t) { return t.file === keep; })) $('eng').value = keep;
+    if (!ENGLIST.length) $('eng').title = 'Put translation files in Documents\\bible-languages-studio-my-translations';
+    if ($('eng').value) showChapter();
+  }).catch(function () { ENGLIST = []; });
+}
+$('eng').onchange = function () { try { localStorage.setItem('bls-eng', this.value); } catch (e) { } showChapter(); };
 // Psalms are numbered differently in the Septuagint
 function lxxPsalm(c) { if (c <= 8) return c; if (c <= 10) return 9; if (c <= 113) return c - 1; if (c <= 115) return 113; if (c === 116) return 114; if (c <= 146) return c - 1; if (c === 147) return 146; return c; }
+function hebPsalm(c) { if (c <= 8) return c; if (c === 9) return 9; if (c <= 112) return c + 1; if (c === 113) return 114; if (c <= 115) return 116; if (c <= 145) return c + 1; if (c <= 147) return 147; return Math.min(c, 150); }
 function hebText(s) { var st = $('hebstyle').value; return st === 'full' ? s : st === 'points' ? BL.stripCantillation(s) : st === 'bare' ? BL.stripPoints(s) : BL.toPaleo(s); }
 var curWords = {};
-function verseHTML(b, c, v, ws, inter) {
-  var lang = b.lang, cls = lang === 'heb' ? ($('hebstyle').value === 'paleo' ? 'phn' : 'heb') : 'grk', out = '<div class="verse ' + cls + '" data-ref="' + b.id + '.' + c + '.' + v + '"><span class="vn">' + v + '</span>';
+function verseHTML(b, c, v, ws, inter, en) {
+  var lang = b.lang, cls = lang === 'heb' ? ($('hebstyle').value === 'paleo' ? 'phn' : 'heb') : 'grk', out = '<div class="verse ' + cls + '" data-ref="' + b.id + '.' + c + '.' + v + '">' + (en ? '<div class="en">' + esc(en) + '</div>' : '') + '<span class="vn">' + v + '</span>';
   if (inter) {
     out += '<div style="direction:' + (lang === 'heb' ? 'rtl' : 'ltr') + '">' + ws.map(function (w, i) {
       var k = b.id + '.' + c + '.' + v + '.' + i; curWords[k] = { b: b, w: w, ref: [b.id, c, v] };
@@ -301,21 +344,76 @@ function verseHTML(b, c, v, ws, inter) {
   return out + '</div>';
 }
 function lexGloss(k) { var e = (LEXG && LEXG[k]) || (LEXH && LEXH[k]); return e ? e[3] : ''; }
+/* English above the Septuagint. The ESV and CSB follow the Hebrew Bible, so each Greek verse is matched to the Hebrew
+   verse it corresponds to: Psalms renumbered (and their titles), 2 Esdras = Ezra + Nehemiah, the Greek additions to
+   Daniel, and 1 Kings 20/21. Elsewhere the Greek and Hebrew verse numbers are the same, though the wording may differ. */
+function lxxEnglish(b, c, ch, E) {
+  var id = b.id, M = {}, note = 'English from the ' + E.abbr + ', which is translated from the Hebrew: each Greek verse shows the Hebrew verse it matches. Where the Greek text differs from the Hebrew, the English will not match it word for word.';
+  var bk = E.books || {}, get = function (book, cc, vv) { var x = bk[book] && bk[book][cc]; return x ? x[vv] : undefined; };
+  var lv = Object.keys(ch).map(Number);
+  function same(book, cc, f) { lv.forEach(function (v) { var e = f ? f(v) : v; if (e === null) return; var t = get(book, e && e.c || cc, e && e.v !== undefined ? e.v : e); if (t) M[v] = t; }); }
+  function psalm(hc, from, to, shift) {
+    var nE = Object.keys((bk.Psa || {})[hc] || {}).filter(function (k) { return k !== '0'; }).length, inRange = lv.filter(function (v) { return v >= from && v <= to; });
+    var off = shift !== undefined ? shift : Math.max(0, Math.min(2, inRange.length - nE)), title = get('Psa', hc, 0);
+    inRange.forEach(function (v) {
+      var e = v - from + 1 - off;
+      if (shift !== undefined) e = v + shift;
+      var t = e >= 1 ? get('Psa', hc, e) : '';
+      if (shift === undefined && e < 1 && v === from && title) t = title;
+      if (shift === undefined && off === 0 && v === from && title) t = title + ' ' + (t || '');
+      if (t) M[v] = t;
+    });
+  }
+  if (id === 'LXXPs') {
+    if (c === 9) { psalm(9, 1, 21); psalm(10, 22, 39, -21); }
+    else if (c === 113) { psalm(114, 1, 8, 0); psalm(115, 9, 26, -8); }
+    else if (c === 114) psalm(116, 1, 99, 0);
+    else if (c === 115) psalm(116, 1, 99, 9);
+    else if (c === 146) psalm(147, 1, 99, 0);
+    else if (c === 147) psalm(147, 1, 99, 11);
+    else if (c === 151) note = 'Psalm 151 is not in the Hebrew Bible, so the ' + E.abbr + ' has no English for it.';
+    else { psalm(hebPsalm(c), 1, 999); if (hebPsalm(c) !== c) note = 'This is Psalm ' + hebPsalm(c) + ' in the Hebrew numbering used by the ' + E.abbr + '. ' + note; }
+  } else if (id === 'LXX2Esd') {
+    same(c <= 10 ? 'Ezr' : 'Neh', c <= 10 ? c : c - 10);
+    if (c > 10) note = '2 Esdras ' + c + ' is Nehemiah ' + (c - 10) + '. ' + note;
+  } else if (id === 'LXXDan' || id === 'LXXDanTh') {
+    if (c === 3) same('Dan', 3, function (v) { return v <= 23 ? v : v <= 90 ? null : v <= 97 ? v - 67 : { c: 4, v: v - 97 }; }), note = 'Verses 24-90 here are the Prayer of Azariah and the Song of the Three, found only in the Greek; ' + E.abbr + ' verses 3:24-30 match Greek 3:91-97, and 4:1-3 match 3:98-100. ' + note;
+    else if (c === 4) same('Dan', 4, function (v) { return v + 3; });
+    else same('Dan', c);
+  } else if (id === 'LXXJer' && c >= 25 && c <= 51) {
+    note = 'Chapters 25-51 of the Greek Jeremiah are in a different order from the Hebrew (and about an eighth shorter), so the ' + E.abbr + ' is not shown beside them. Open Jeremiah in the Hebrew OT to read these chapters in English.';
+  } else if (id === 'LXX3Kgdms' && (c === 20 || c === 21)) {
+    same('1Ki', c === 20 ? 21 : 20); note = '3 Kingdoms ' + c + ' is 1 Kings ' + (c === 20 ? 21 : 20) + ' (the two chapters are in the opposite order in the Greek). ' + note;
+  } else if (b.heb) same(b.heb, c);
+  else note = 'This book is in the Septuagint but not in the Hebrew Bible, so the ' + E.abbr + ' does not include it.';
+  return { map: M, note: note };
+}
 function showChapter() {
   var b = BYID[state.book], c = state.chap, inter = $('inter').checked;
   $('hebopts').style.display = b.lang === 'heb' ? '' : 'none';
-  var lxxB = b.corpus === 'ot' ? BOOKS.filter(function (x) { return x.corpus === 'lxx' && x.heb === b.id; })[0] : null;
+  var lxxB = b.corpus === 'ot' ? BOOKS.filter(function (x) { return x.corpus === 'lxx' && x.heb === (b.id === 'Neh' ? 'Ezr' : b.id); })[0] : null;
   $('parwrap').style.display = lxxB ? '' : 'none';
   $('chaptitle').textContent = b.name + ' ' + c;
   $('bookinfo').textContent = b.corpus === 'ot' ? 'Westminster Leningrad Codex' : b.corpus === 'nt' ? 'SBL Greek New Testament' : 'Septuagint, Swete\'s edition' + (b.heb ? '' : ' (no Hebrew counterpart)');
-  $('text').innerHTML = '<span class="loading">Loading…</span>'; curWords = {};
-  var jobs = [bookData(b.id)], lc = c;
-  if (lxxB && $('par').checked) { lc = lxxB.id === 'LXXPs' ? lxxPsalm(c) : c; jobs.push(bookData(lxxB.id)); }
-  Promise.all(jobs).then(function (r) {
-    var ch = r[0][c] || {}, html = Object.keys(ch).map(Number).sort(function (a, b2) { return a - b2; }).map(function (v) { return verseHTML(b, c, v, ch[v], inter); }).join('');
+  $('text').innerHTML = '<span class="loading">Loading…</span>'; curWords = {}; $('textpane').scrollTop = 0; fitBible();
+  var engId = $('eng').value, jobs = [bookData(b.id)], lc = c;
+  $('engwrap').style.display = ENGLIST.length ? '' : 'none';
+  if (lxxB && $('par').checked) { lc = lxxB.id === 'LXXPs' ? lxxPsalm(c) : b.id === 'Neh' ? c + 10 : c; jobs.push(bookData(lxxB.id)); }
+  Promise.all([Promise.all(jobs), engId ? engLoad(engId).catch(function () { return null; }) : null]).then(function (rr) {
+    var r = rr[0], E = rr[1], ch = r[0][c] || {}, vs = Object.keys(ch), lx = b.corpus === 'lxx' && E ? lxxEnglish(b, c, ch, E) : null;
+    var ech = lx ? lx.map : E && E.books && E.books[b.id] ? (E.books[b.id][c] || {}) : null;
+    if (ech && !lx) Object.keys(ech).forEach(function (v) { if (!ch[v]) vs.push(v); });
+    var html = vs.map(Number).sort(function (a, b2) { return a - b2; }).map(function (v) {
+      if (ch[v]) return verseHTML(b, c, v, ch[v], inter, ech ? ech[v] : '');
+      return '<div class="verse"><div class="en only"><b class="hint">' + v + '</b> ' + esc(ech[v]) + ' <span class="hint">(in the ' + esc(E.abbr) + ', not in this ' + (b.corpus === 'ot' ? 'Hebrew' : 'Greek') + ' text)</span></div></div>';
+    }).join('');
+    if (ech) {
+      if (lx && lx.note) html = '<div class="hint" style="margin-bottom:6px">' + esc(lx.note) + '</div>' + html;
+      html += '<div class="hint" style="margin-top:8px">English: ' + esc(E.name || E.abbr) + (E.copyright ? ' \u2013 ' + esc(E.copyright) : '') + '. Your own copy, kept on this computer only.</div>';
+    }
     if (r[1]) {
       var lch = r[1][lc] || {}, lhtml = Object.keys(lch).map(Number).sort(function (a, b2) { return a - b2; }).map(function (v) { return verseHTML(lxxB, lc, v, lch[v], inter); }).join('');
-      html = '<div class="par"><div>' + html + '</div><div><div class="hint">' + esc(lxxB.name) + ' ' + lc + (lxxB.id === 'LXXPs' && lc !== c ? ' (the Septuagint numbers the Psalms differently)' : '') + (lxxB.id === 'LXXJer' ? ' (Jeremiah is ordered differently in the Septuagint)' : '') + '</div>' + (lhtml || '<div class="hint">No text for this chapter.</div>') + '</div></div>';
+      html = '<div class="par"><div>' + html + '</div><div><div class="hint">' + esc(lxxB.name) + ' ' + lc + (lxxB.id === 'LXXPs' && lc !== c ? ' (the Septuagint numbers the Psalms differently)' : '') + (lxxB.id === 'LXXJer' ? ' (Jeremiah is ordered differently in the Septuagint)' : '') + (b.id === 'Neh' ? ' (Nehemiah is chapters 11-23 of 2 Esdras in the Septuagint)' : '') + '</div>' + (lhtml || '<div class="hint">No text for this chapter.</div>') + '</div></div>';
     }
     $('text').innerHTML = html || '<div class="hint">No text.</div>';
   }).catch(function (e) { $('text').innerHTML = '<div class="note">' + esc(e.message) + '</div>'; });
@@ -608,7 +706,7 @@ $('runtest').onclick = function () {
     BL.loadFont('heb', new Uint8Array(r[4])); BL.loadFont('grk', new Uint8Array(r[5])); BL.loadFont('phn', new Uint8Array(r[6]));
     READY = true;
     $('ver').textContent = 'engine ' + BL.version + ' · ' + BOOKS.filter(function (b) { return b.corpus === 'ot'; }).length + ' OT, ' + BOOKS.filter(function (b) { return b.corpus === 'lxx'; }).length + ' Septuagint, ' + BOOKS.filter(function (b) { return b.corpus === 'nt'; }).length + ' NT books · ' + Object.keys(LEXH).length.toLocaleString('en-AU') + ' Hebrew/Aramaic + ' + Object.keys(LEXG).length.toLocaleString('en-AU') + ' Greek dictionary entries';
-    fillBooks(); showChapter(); kbd(); wHint();
+    fillBooks(); showChapter(); kbd(); wHint(); engInit();
     var m = await Promise.all(['tr_heb', 'tr_grk', 'en_heb', 'en_grk', 'forms_heb', 'forms_grk', 'grk_keylemma', 'heb2grk'].map(function (f) { return getJSON('data/lex/' + f + '.json'); }).concat([fetch('data/cmu.tsv').then(function (x) { return x.text(); })]));
     BL.load('trHeb', m[0]); BL.load('trGrk', m[1]); BL.load('enHeb', m[2]); BL.load('enGrk', m[3]); BL.load('formsHeb', m[4]); BL.load('formsGrk', m[5]); BL.load('keyLemma', m[6]); H2G = m[7]; BL.load('cmu', m[8]); BL.indexForms();
     MORE = true; write(); if ($('v-translate').classList.contains('on')) translate();

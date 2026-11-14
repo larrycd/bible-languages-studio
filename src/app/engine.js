@@ -1,9 +1,9 @@
-/* Bible Languages Studio engine 1.0.0 - by Larry Dalton.
+/* Bible Languages Studio engine 1.0.4 - by Larry Dalton.
    Biblical Hebrew (pointed and Paleo-Hebrew) and Koine Greek. Shared by the browser studio and the Node tests.
    No network access. Text shaping uses HarfBuzz (harfbuzzjs, MIT), passed in with setShaper(). */
 (function (root) {
 'use strict';
-var B = { version: '1.0.0' };
+var B = { version: '1.0.4' };
 
 /* ============================================================ Hebrew letters */
 var HEB_LET = 'אבגדהוזחטיכךלמםנןסעפףצץקרשת';
