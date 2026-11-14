@@ -28,6 +28,17 @@ A local Windows studio with the Hebrew Old Testament, the Greek New Testament an
 
 ![The Bible view](docs/images/studio-bible.png)
 
+## New in 1.0.1 to 1.0.4
+
+- **English above the text (1.0.2, 1.0.4).** An English line can be shown above every verse of the Hebrew OT, the Greek NT
+  and the Septuagint, from your **own** translation files kept in `Documents\bible-languages-studio-my-translations`
+  (for example a personal ESV or CSB). They are read from that folder on your computer only and are never part of the
+  studio, its installer or its releases. Above the Septuagint each Greek verse shows the Hebrew verse it matches
+  (Psalms renumbered, 2 Esdras = Ezra and Nehemiah, the Greek additions to Daniel marked).
+- **Scrolling (1.0.3).** On a wide screen the Scripture text scrolls on its own while the Word panel stays in view.
+- **Navigation (1.0.1).** Switching between the Hebrew OT and the Septuagint keeps the same passage (Psalms renumbered,
+  2 Esdras 11-23 = Nehemiah), and Nehemiah now shows the Septuagint beside the Hebrew.
+
 ## Reading it back (measured)
 
 | Test | Result |
