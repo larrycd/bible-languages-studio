@@ -11,5 +11,5 @@ Expand-Archive -LiteralPath $zip -DestinationPath $work -Force
 & (Join-Path $work 'BibleLanguagesStudio\Install.ps1') -Source (Join-Path $work 'BibleLanguagesStudio\payload')
 $health = (Invoke-WebRequest -UseBasicParsing -Uri 'http://localhost:8769/api/health' -TimeoutSec 10).Content
 Write-Host "Server reports: $health"
-if ($health -match '"version":"1\.0\.0"') { Write-Host 'Bible Languages Studio 1.0.0 is running. Refresh the studio tab with Ctrl+F5.' -ForegroundColor Green }
+if ($health -match '"version":"1\.0\.4"') { Write-Host 'Bible Languages Studio 1.0.4 is running. Refresh the studio tab with Ctrl+F5.' -ForegroundColor Green }
 else { Write-Host 'The version did not change - see the messages above.' -ForegroundColor Yellow }

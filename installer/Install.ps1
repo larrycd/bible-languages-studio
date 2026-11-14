@@ -12,7 +12,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $Port = 8769
-$Version = '1.0.0'
+$Version = '1.0.4'
 $ResultFile = Join-Path $env:TEMP 'BibleLanguagesStudio-install-result.txt'
 if (-not $Source) { $Source = Join-Path $PSScriptRoot 'payload' }
 $App = Join-Path $env:LOCALAPPDATA 'BibleLanguagesStudio'
